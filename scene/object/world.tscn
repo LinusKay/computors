@@ -1,0 +1,146 @@
+[gd_scene load_steps=19 format=3 uid="uid://cdlbuouhdddtl"]
+
+[ext_resource type="PackedScene" uid="uid://bl3l8std3wcxc" path="res://scene/object/old_computer.tscn" id="2_h1ldq"]
+[ext_resource type="PackedScene" uid="uid://dptbq265y40bl" path="res://scene/object/old_computer_monitor.tscn" id="3_tqooo"]
+[ext_resource type="Script" path="res://script/camera.gd" id="4_4gbmn"]
+[ext_resource type="PackedScene" uid="uid://rsb4ts8uca4q" path="res://scene/object/desk.tscn" id="5_748lb"]
+[ext_resource type="Texture2D" uid="uid://cr8c513j6ht4o" path="res://sprite/beige_wall_002_diff_4k_1024.jpg" id="5_n25k3"]
+[ext_resource type="Texture2D" uid="uid://drnsclleylmw6" path="res://sprite/Sabby_Jam25-01.png" id="5_wo72k"]
+[ext_resource type="Texture2D" uid="uid://0ig0aupfeixp" path="res://sprite/goldring.jpg" id="7_godbb"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_jygjw"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_isfvt"]
+sky_material = SubResource("ProceduralSkyMaterial_jygjw")
+
+[sub_resource type="Environment" id="Environment_wdis0"]
+background_mode = 2
+sky = SubResource("Sky_isfvt")
+ambient_light_sky_contribution = 0.09
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rv6fb"]
+albedo_texture = ExtResource("5_n25k3")
+uv1_scale = Vector3(1, 5, 5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_i1qa4"]
+albedo_texture = ExtResource("5_n25k3")
+uv1_scale = Vector3(1, 5, 5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5vh7r"]
+albedo_texture = ExtResource("5_n25k3")
+uv1_scale = Vector3(1, 5, 5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_eyk6f"]
+albedo_texture = ExtResource("5_n25k3")
+uv1_scale = Vector3(1, 5, 5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vc3c8"]
+albedo_texture = ExtResource("5_n25k3")
+uv1_scale = Vector3(1, 5, 5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rm151"]
+albedo_texture = ExtResource("5_n25k3")
+uv1_scale = Vector3(1, 5, 5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fe7q8"]
+albedo_texture = ExtResource("5_n25k3")
+uv1_scale = Vector3(1, 5, 5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_brwg7"]
+albedo_texture = ExtResource("5_n25k3")
+uv1_scale = Vector3(1, 5, 5)
+
+[node name="Node3D" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_wdis0")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
+light_color = Color(0.377919, 0.377919, 0.377919, 1)
+shadow_enabled = true
+
+[node name="monitor_left" parent="." instance=ExtResource("3_tqooo")]
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 2.68058, 3.54881, 6.6874)
+focus_fov = 33.0
+
+[node name="monitor_middle" parent="." instance=ExtResource("2_h1ldq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.72401, 3.60455, 4.20515)
+focus_fov = 37.0
+
+[node name="monitor_right" parent="." instance=ExtResource("3_tqooo")]
+transform = Transform3D(0.430413, 0.054711, -0.248499, -0.0671498, 0.495418, -0.00723264, 0.24543, 0.0395993, 0.433816, 2.45339, 5.68265, 2.15138)
+focus_fov = 15.0
+origin_offset = Vector3(0, 0.3, 0)
+
+[node name="Camera3D" type="Camera3D" parent="." node_paths=PackedStringArray("focus_array")]
+transform = Transform3D(0.615662, 0.382035, 0.68921, 0, 0.87462, -0.484809, -0.788011, 0.298479, 0.53847, 5, 4.63398, 4)
+script = ExtResource("4_4gbmn")
+focus_array = [NodePath("../monitor_left"), NodePath("../monitor_middle"), NodePath("../monitor_right")]
+
+[node name="Desk" parent="." instance=ExtResource("5_748lb")]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 6.76714, 0.00598216, 4.56392)
+
+[node name="SpotLight3D" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 3.77097, 9, 4.02278)
+light_energy = 5.88
+shadow_enabled = true
+spot_range = 14.8257
+
+[node name="CSGBox3D" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.97069, 4.01959)
+size = Vector3(1, 10.035, 21.2443)
+material = SubResource("StandardMaterial3D_rv6fb")
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="CSGBox3D"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 5.129, 0, -10)
+size = Vector3(1, 10.035, 10.9863)
+material = SubResource("StandardMaterial3D_i1qa4")
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="CSGBox3D"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 10.129, 0, -10)
+size = Vector3(1, 10.035, 10.9863)
+material = SubResource("StandardMaterial3D_5vh7r")
+
+[node name="CSGBox3D4" type="CSGBox3D" parent="CSGBox3D"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 13.1359, 0, -5)
+size = Vector3(1, 10.035, 7)
+material = SubResource("StandardMaterial3D_eyk6f")
+
+[node name="CSGBox3D5" type="CSGBox3D" parent="CSGBox3D"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 16.1359, 0, 2.5)
+size = Vector3(1, 10.035, 16)
+material = SubResource("StandardMaterial3D_vc3c8")
+
+[node name="CSGBox3D6" type="CSGBox3D" parent="CSGBox3D"]
+transform = Transform3D(1.31134e-07, 0, 1, 0, 1, 0, -1, 0, 1.31134e-07, 8.13586, 0, 9.5)
+size = Vector3(1, 10.035, 16)
+material = SubResource("StandardMaterial3D_rm151")
+
+[node name="CSGBox3D7" type="CSGBox3D" parent="CSGBox3D"]
+transform = Transform3D(1.31134e-07, 0, 1, -1, -4.37114e-08, 1.31134e-07, 4.37114e-08, -1, -5.73206e-15, 8.19096, -5.01414, 0.0110664)
+size = Vector3(1, 21, 16)
+material = SubResource("StandardMaterial3D_fe7q8")
+
+[node name="CSGBox3D8" type="CSGBox3D" parent="CSGBox3D"]
+transform = Transform3D(1.31134e-07, 0, 1, -1, -4.37114e-08, 1.31134e-07, 4.37114e-08, -1, -5.73206e-15, 8.19096, 4.98586, 0.0110664)
+size = Vector3(1, 21, 16)
+material = SubResource("StandardMaterial3D_brwg7")
+
+[node name="Decal" type="Decal" parent="."]
+transform = Transform3D(-4.37114e-08, 1, 0, 0.059411, 2.59694e-09, -0.998234, -0.998234, -4.36342e-08, -0.059411, 0.122803, 6.25519, 6.32515)
+size = Vector3(2.46924, 2.24561, 3.15723)
+texture_albedo = ExtResource("5_wo72k")
+upper_fade = 0.00331457
+lower_fade = 0.00844922
+
+[node name="Decal2" type="Decal" parent="."]
+transform = Transform3D(-4.37114e-08, 1, 0, -0.0210994, -9.22285e-10, -0.999777, -0.999777, -4.37017e-08, 0.0210994, -0.11908, 5.34015, 4.41776)
+size = Vector3(1.24524, 1.76184, 1.02631)
+texture_albedo = ExtResource("7_godbb")
+upper_fade = 0.000606601
+lower_fade = 0.00538452

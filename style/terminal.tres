@@ -1,0 +1,17 @@
+[gd_resource type="Theme" load_steps=5 format=3 uid="uid://rls2qjbal6dt"]
+
+[ext_resource type="FontFile" uid="uid://cnwm1hnsgn1vl" path="res://font/PublicPixel.ttf" id="1_x5hoo"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3mf4l"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_4tbk0"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_irwit"]
+
+[resource]
+default_font = ExtResource("1_x5hoo")
+default_font_size = 10
+Label/colors/font_color = Color(1, 1, 1, 1)
+TextEdit/styles/focus = SubResource("StyleBoxEmpty_3mf4l")
+TextEdit/styles/normal = SubResource("StyleBoxEmpty_4tbk0")
+TextEdit/styles/read_only = SubResource("StyleBoxEmpty_irwit")
