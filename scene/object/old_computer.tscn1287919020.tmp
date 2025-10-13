@@ -1,0 +1,110 @@
+[gd_scene load_steps=8 format=3 uid="uid://bl3l8std3wcxc"]
+
+[ext_resource type="PackedScene" uid="uid://ct07h20p64f4m" path="res://model/old_computer.fbx" id="1_0ac0h"]
+[ext_resource type="Script" uid="uid://fcvs1kw8emjm" path="res://script/computer.gd" id="2_t0qmx"]
+[ext_resource type="Shader" uid="uid://dpcocmg7b2mm1" path="res://shader/holo.gdshader" id="3_6wsn7"]
+[ext_resource type="Theme" uid="uid://rls2qjbal6dt" path="res://style/terminal.tres" id="4_qicgd"]
+[ext_resource type="AudioStream" uid="uid://c17x2345flopj" path="res://audio/sfx/ambient/computer-humming-236384.ogg" id="6_ejpe2"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_088vp"]
+viewport_path = NodePath("Screen/SubViewportContainer/SubViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tqvw2"]
+render_priority = 0
+shader = ExtResource("3_6wsn7")
+shader_parameter/normal_depth = 0.25
+shader_parameter/color_compression = 6.0
+
+[node name="old_computer" instance=ExtResource("1_0ac0h")]
+script = ExtResource("2_t0qmx")
+
+[node name="desk" parent="." index="0"]
+layers = 2
+
+[node name="focus_origin" type="Node3D" parent="." index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.01867, -0.166852)
+
+[node name="Screen" type="Sprite3D" parent="." index="2"]
+transform = Transform3D(-1.09278e-08, 0, 0.25, 0, 0.25, 0, -0.25, 0, -1.09278e-08, 0.729437, 1.01641, -0.16971)
+transparency = 0.5
+texture = SubResource("ViewportTexture_088vp")
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="Screen" index="0"]
+material = SubResource("ShaderMaterial_tqvw2")
+offset_left = -684.0
+offset_top = 40.0
+offset_right = -34.0
+offset_bottom = 525.0
+
+[node name="SubViewport" type="SubViewport" parent="Screen/SubViewportContainer" index="0"]
+handle_input_locally = false
+size = Vector2i(650, 485)
+render_target_update_mode = 4
+
+[node name="Control" type="Control" parent="Screen/SubViewportContainer/SubViewport" index="0"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 2
+mouse_filter = 1
+theme = ExtResource("4_qicgd")
+
+[node name="ColorRect" type="ColorRect" parent="Screen/SubViewportContainer/SubViewport/Control" index="0"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Screen/SubViewportContainer/SubViewport/Control" index="1"]
+custom_minimum_size = Vector2(0, 470)
+layout_mode = 0
+offset_right = 800.0
+offset_bottom = 8.0
+
+[node name="TerminalLog" type="VBoxContainer" parent="Screen/SubViewportContainer/SubViewport/Control/ScrollContainer" index="0"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/ScrollContainer/TerminalLog" index="0"]
+custom_minimum_size = Vector2(800, 0)
+layout_mode = 2
+text = "GombuComp [Version 5.3.05943.234]
+(c) Gombudor Corporation. All rights reserved."
+autowrap_mode = 1
+
+[node name="TerminalInput" type="HBoxContainer" parent="Screen/SubViewportContainer/SubViewport/Control" index="2"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -12.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Label" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/TerminalInput" index="0"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "C:\\Users\\local>"
+
+[node name="TextEdit" type="TextEdit" parent="Screen/SubViewportContainer/SubViewport/Control/TerminalInput" index="1"]
+custom_minimum_size = Vector2(0, 17)
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("4_qicgd")
+caret_type = 1
+caret_blink = true
+
+[node name="AudioComputerHum" type="AudioStreamPlayer3D" parent="." index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.91215456, 0.9014982, -2.1472933)
+stream = ExtResource("6_ejpe2")
+volume_db = -10.0
+autoplay = true
+bus = &"sfx"
+
+[connection signal="gui_input" from="Screen/SubViewportContainer/SubViewport/Control/TerminalInput/TextEdit" to="Screen/SubViewportContainer/SubViewport/Control" method="_on_text_edit_gui_input"]

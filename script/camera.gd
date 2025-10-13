@@ -48,9 +48,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		pulled_back = false
 	
 	if pulled_back:
-		if Input.is_action_pressed("ui_right"):
+		if Input.is_action_pressed("focus_right"):
 			focus_index += 1
-		if Input.is_action_pressed("ui_left"):
+		if Input.is_action_pressed("focus_left"):
 			focus_index -= 1
 			
 	focus_target.get_node("Screen/SubViewportContainer/SubViewport").push_input(event)

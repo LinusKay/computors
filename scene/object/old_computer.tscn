@@ -1,10 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://bl3l8std3wcxc"]
+[gd_scene load_steps=9 format=3 uid="uid://bl3l8std3wcxc"]
 
 [ext_resource type="PackedScene" uid="uid://ct07h20p64f4m" path="res://model/old_computer.fbx" id="1_0ac0h"]
-[ext_resource type="Script" path="res://script/computer.gd" id="2_t0qmx"]
-[ext_resource type="Shader" path="res://shader/holo.gdshader" id="3_6wsn7"]
-[ext_resource type="Script" path="res://script/terminal.gd" id="3_vault"]
+[ext_resource type="Script" uid="uid://fcvs1kw8emjm" path="res://script/computer.gd" id="2_t0qmx"]
+[ext_resource type="Shader" uid="uid://dpcocmg7b2mm1" path="res://shader/holo.gdshader" id="3_6wsn7"]
 [ext_resource type="Theme" uid="uid://rls2qjbal6dt" path="res://style/terminal.tres" id="4_qicgd"]
+[ext_resource type="Script" uid="uid://dxu27jr5gwnt4" path="res://script/terminal_chatroom.gd" id="5_ejpe2"]
+[ext_resource type="AudioStream" uid="uid://c17x2345flopj" path="res://audio/sfx/ambient/computer-humming-236384.ogg" id="6_ejpe2"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_088vp"]
 viewport_path = NodePath("Screen/SubViewportContainer/SubViewport")
@@ -51,7 +52,7 @@ grow_vertical = 2
 focus_mode = 2
 mouse_filter = 1
 theme = ExtResource("4_qicgd")
-script = ExtResource("3_vault")
+script = ExtResource("5_ejpe2")
 
 [node name="ColorRect" type="ColorRect" parent="Screen/SubViewportContainer/SubViewport/Control" index="0"]
 layout_mode = 1
@@ -64,7 +65,7 @@ color = Color(0, 0, 0, 1)
 
 [node name="ScrollContainer" type="ScrollContainer" parent="Screen/SubViewportContainer/SubViewport/Control" index="1"]
 custom_minimum_size = Vector2(0, 470)
-layout_mode = 2
+layout_mode = 0
 offset_right = 800.0
 offset_bottom = 8.0
 
@@ -100,5 +101,12 @@ size_flags_horizontal = 3
 theme = ExtResource("4_qicgd")
 caret_type = 1
 caret_blink = true
+
+[node name="AudioComputerHum" type="AudioStreamPlayer3D" parent="." index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.91215456, 0.9014982, -2.1472933)
+stream = ExtResource("6_ejpe2")
+volume_db = -10.0
+autoplay = true
+bus = &"sfx"
 
 [connection signal="gui_input" from="Screen/SubViewportContainer/SubViewport/Control/TerminalInput/TextEdit" to="Screen/SubViewportContainer/SubViewport/Control" method="_on_text_edit_gui_input"]

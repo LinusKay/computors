@@ -1,10 +1,9 @@
-[gd_scene load_steps=12 format=4 uid="uid://dptbq265y40bl"]
+[gd_scene load_steps=10 format=4 uid="uid://dptbq265y40bl"]
 
 [ext_resource type="PackedScene" uid="uid://rjnmowlocoil" path="res://model/old_computer_monitor.glb" id="1_pa6c8"]
-[ext_resource type="Script" path="res://script/computer.gd" id="2_413xo"]
+[ext_resource type="Script" uid="uid://fcvs1kw8emjm" path="res://script/computer.gd" id="2_413xo"]
 [ext_resource type="Texture2D" uid="uid://7pvl3emjcoau" path="res://model/computer_texture.png" id="2_gcipr"]
-[ext_resource type="Script" path="res://script/terminal.gd" id="4_755ft"]
-[ext_resource type="Shader" path="res://shader/holo.gdshader" id="4_ql5ly"]
+[ext_resource type="Script" uid="uid://bsbvd72lvwu8p" path="res://script/terminal_reference.gd" id="4_755ft"]
 [ext_resource type="Theme" uid="uid://rls2qjbal6dt" path="res://style/terminal.tres" id="5_37hri"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_d40no"]
@@ -49,12 +48,6 @@ shadow_mesh = SubResource("ArrayMesh_d5qpx")
 [sub_resource type="ViewportTexture" id="ViewportTexture_xo2fp"]
 viewport_path = NodePath("Screen/SubViewportContainer/SubViewport")
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_p1u0y"]
-render_priority = 0
-shader = ExtResource("4_ql5ly")
-shader_parameter/normal_depth = 0.25
-shader_parameter/color_compression = 6.0
-
 [node name="old_computer_monitor" instance=ExtResource("1_pa6c8")]
 script = ExtResource("2_413xo")
 
@@ -66,16 +59,23 @@ mesh = SubResource("ArrayMesh_a2npm")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.994813, -0.166852)
 
 [node name="Screen" type="Sprite3D" parent="." index="2"]
-transform = Transform3D(-1.09278e-08, 0, 0.25, 0, 0.25, 0, -0.25, 0, -1.09278e-08, 0.729437, 1.01641, -0.16971)
+transform = Transform3D(-1.09278e-08, 0, 0.25, 0, 0.25, 0, -0.25, 0, -1.09278e-08, 0.7351655, 1.01641, -0.16971)
 transparency = 0.5
 texture = SubResource("ViewportTexture_xo2fp")
 
 [node name="SubViewportContainer" type="SubViewportContainer" parent="Screen" index="0"]
-material = SubResource("ShaderMaterial_p1u0y")
-offset_left = -684.0
-offset_top = 40.0
-offset_right = -34.0
-offset_bottom = 525.0
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 144.0
+offset_top = -557.0
+offset_right = 794.0
+offset_bottom = -72.0
+grow_horizontal = 0
+grow_vertical = 0
+stretch = true
 
 [node name="SubViewport" type="SubViewport" parent="Screen/SubViewportContainer" index="0"]
 handle_input_locally = false
@@ -105,19 +105,23 @@ color = Color(0, 0, 0, 1)
 
 [node name="ScrollContainer" type="ScrollContainer" parent="Screen/SubViewportContainer/SubViewport/Control" index="1"]
 custom_minimum_size = Vector2(0, 470)
-layout_mode = 2
-offset_right = 800.0
-offset_bottom = 8.0
+layout_mode = 0
+offset_right = 643.0
+offset_bottom = 470.0
+horizontal_scroll_mode = 0
 
 [node name="TerminalLog" type="VBoxContainer" parent="Screen/SubViewportContainer/SubViewport/Control/ScrollContainer" index="0"]
 layout_mode = 2
 
 [node name="Label" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/ScrollContainer/TerminalLog" index="0"]
-custom_minimum_size = Vector2(800, 0)
+custom_minimum_size = Vector2(640, 0)
 layout_mode = 2
+size_flags_vertical = 6
 text = "GombuComp [Version 5.3.05943.234]
 (c) Gombudor Corporation. All rights reserved."
 autowrap_mode = 1
+autowrap_trim_flags = 0
+justification_flags = 162
 
 [node name="TerminalInput" type="HBoxContainer" parent="Screen/SubViewportContainer/SubViewport/Control" index="2"]
 layout_mode = 1
@@ -138,6 +142,7 @@ text = "C:\\Users\\local>"
 custom_minimum_size = Vector2(0, 17)
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 4
 theme = ExtResource("5_37hri")
 caret_type = 1
 caret_blink = true

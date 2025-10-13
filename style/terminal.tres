@@ -1,6 +1,6 @@
 [gd_resource type="Theme" load_steps=5 format=3 uid="uid://rls2qjbal6dt"]
 
-[ext_resource type="FontFile" uid="uid://cnwm1hnsgn1vl" path="res://font/PublicPixel.ttf" id="1_x5hoo"]
+[ext_resource type="FontFile" uid="uid://c44f6qlxjph8p" path="res://font/vt323-latin-400-normal.ttf" id="1_8j5to"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3mf4l"]
 
@@ -9,8 +9,8 @@
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_irwit"]
 
 [resource]
-default_font = ExtResource("1_x5hoo")
-default_font_size = 10
+default_font = ExtResource("1_8j5to")
+default_font_size = 13
 Label/colors/font_color = Color(1, 1, 1, 1)
 TextEdit/styles/focus = SubResource("StyleBoxEmpty_3mf4l")
 TextEdit/styles/normal = SubResource("StyleBoxEmpty_4tbk0")

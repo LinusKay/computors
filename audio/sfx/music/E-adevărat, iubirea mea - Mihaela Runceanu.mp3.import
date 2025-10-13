@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://c3g8jvim6otad"
+path="res://.godot/imported/E-adevărat, iubirea mea - Mihaela Runceanu.mp3-8f7c4a32b3891fe58a7685c539090cdd.mp3str"
+
+[deps]
+
+source_file="res://audio/sfx/music/E-adevărat, iubirea mea - Mihaela Runceanu.mp3"
+dest_files=["res://.godot/imported/E-adevărat, iubirea mea - Mihaela Runceanu.mp3-8f7c4a32b3891fe58a7685c539090cdd.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
