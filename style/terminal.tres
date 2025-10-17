@@ -10,7 +10,7 @@
 
 [resource]
 default_font = ExtResource("1_8j5to")
-default_font_size = 13
+default_font_size = 15
 Label/colors/font_color = Color(1, 1, 1, 1)
 TextEdit/styles/focus = SubResource("StyleBoxEmpty_3mf4l")
 TextEdit/styles/normal = SubResource("StyleBoxEmpty_4tbk0")

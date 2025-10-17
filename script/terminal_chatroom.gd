@@ -1,6 +1,6 @@
 extends Control
 
-@onready var terminal_log: VBoxContainer = $ScrollContainer/TerminalLog
+@onready var terminal_log: VBoxContainer = %ScrollContainer/TerminalLog
 @onready var audio_keyboard_sfx: AudioStreamPlayer3D = get_node("/root/Node3D/KeyboardSFX")
 
 var command_history = []
@@ -152,17 +152,17 @@ func _on_text_edit_gui_input(event: InputEvent) -> void:
 						match_found = true
 						break
 			if !match_found: _error("UNRECOGNISED_OPERATION")
-		print($ScrollContainer.get_v_scroll_bar().max_value)
-		$ScrollContainer.scroll_vertical = $ScrollContainer.get_v_scroll_bar().max_value
+		print(%ScrollContainer.get_v_scroll_bar().max_value)
+		%ScrollContainer.scroll_vertical = %ScrollContainer.get_v_scroll_bar().max_value
 		# Prevent newline from being placed in input box by cancelling further handling
 		get_viewport().set_input_as_handled()
 
 			
 	elif event.is_action_pressed("pgdn"):
-		$ScrollContainer.scroll_vertical += SCROLL_DISTANCE
+		%ScrollContainer.scroll_vertical += SCROLL_DISTANCE
 		
 	elif event.is_action_pressed("pgup"):
-		$ScrollContainer.scroll_vertical -= SCROLL_DISTANCE
+		%ScrollContainer.scroll_vertical -= SCROLL_DISTANCE
 	get_node("/root/Node3D/KeyboardSFX").play()
 	#audio_keyboard_sfx.play()
 	

@@ -1,11 +1,14 @@
-[gd_scene load_steps=31 format=3 uid="uid://cdlbuouhdddtl"]
+[gd_scene load_steps=34 format=3 uid="uid://cdlbuouhdddtl"]
 
-[ext_resource type="PackedScene" uid="uid://bl3l8std3wcxc" path="res://scene/object/old_computer.tscn" id="2_h1ldq"]
-[ext_resource type="PackedScene" uid="uid://dptbq265y40bl" path="res://scene/object/old_computer_monitor.tscn" id="3_tqooo"]
+[ext_resource type="Script" uid="uid://dgytay7sgen8k" path="res://scene/object/event_controller.gd" id="1_1ebx5"]
+[ext_resource type="PackedScene" uid="uid://bl3l8std3wcxc" path="res://scene/object/monitor_reference.tscn" id="3_tqooo"]
 [ext_resource type="Script" uid="uid://b3suwn2fq5iq2" path="res://script/camera.gd" id="4_4gbmn"]
+[ext_resource type="PackedScene" uid="uid://l3l8std3wcxc" path="res://scene/object/monitor_input.tscn" id="4_kwmd8"]
 [ext_resource type="PackedScene" uid="uid://rsb4ts8uca4q" path="res://scene/object/desk.tscn" id="5_748lb"]
+[ext_resource type="PackedScene" uid="uid://dmesnq886wffc" path="res://scene/object/monitor_receive.tscn" id="5_kwmd8"]
 [ext_resource type="Texture2D" uid="uid://cr8c513j6ht4o" path="res://sprite/beige_wall_002_diff_4k_1024.jpg" id="5_n25k3"]
 [ext_resource type="Texture2D" uid="uid://drnsclleylmw6" path="res://sprite/Sabby_Jam25-01.png" id="5_wo72k"]
+[ext_resource type="PackedScene" uid="uid://cuo0ptgeuqwut" path="res://scene/object/printer.tscn" id="6_v48e1"]
 [ext_resource type="Texture2D" uid="uid://0ig0aupfeixp" path="res://sprite/goldring.jpg" id="7_godbb"]
 [ext_resource type="AudioStream" uid="uid://bnns1brgbb6ux" path="res://audio/sfx/typing/keypress-001.ogg" id="8_55vyt"]
 [ext_resource type="AudioStream" uid="uid://c1jci8qgy5e3h" path="res://audio/sfx/typing/keypress-002.ogg" id="9_lxju4"]
@@ -119,26 +122,40 @@ transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75
 light_color = Color(0.377919, 0.377919, 0.377919, 1)
 shadow_enabled = true
 
+[node name="EventController" type="Node3D" parent="." node_paths=PackedStringArray("camera", "monitor_reference", "monitor_input", "monitor_receive")]
+script = ExtResource("1_1ebx5")
+camera = NodePath("../Camera3D")
+monitor_reference = NodePath("../MonitorReference")
+monitor_input = NodePath("../MonitorInput")
+monitor_receive = NodePath("../MonitorReceive")
+
 [node name="Camera3D" type="Camera3D" parent="." node_paths=PackedStringArray("focus_array")]
-transform = Transform3D(0.6156617, 0.38203508, 0.6892097, 0, 0.87461984, -0.48480955, -0.78801066, 0.2984787, 0.5384699, 5, 4.63398, 4)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1.0000001, 0, -1, 0, -4.371139e-08, 5, 4.63398, 4)
 script = ExtResource("4_4gbmn")
-focus_array = [NodePath("../monitor_left"), NodePath("../monitor_middle"), NodePath("../monitor_right")]
+focus_array = [NodePath("../MonitorReference"), NodePath("../MonitorInput"), NodePath("../MonitorReceive"), NodePath("../Printer")]
+focus_index = 1
 
-[node name="monitor_left" parent="." instance=ExtResource("3_tqooo")]
+[node name="MonitorReference" parent="." node_paths=PackedStringArray("event_controller", "audio_keyboard_sfx") instance=ExtResource("3_tqooo")]
 transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 2.68058, 3.54881, 6.6874)
+event_controller = NodePath("../EventController")
 focus_fov = 33.0
-computer_type = "reference"
+audio_keyboard_sfx = NodePath("../KeyboardSFX")
 
-[node name="monitor_middle" parent="." instance=ExtResource("2_h1ldq")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.72401, 3.60455, 4.20515)
-focus_fov = 37.0
-computer_type = "chatroom"
+[node name="MonitorInput" parent="." node_paths=PackedStringArray("event_controller", "audio_keyboard_sfx") instance=ExtResource("4_kwmd8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6428585, 3.592045, 4.248417)
+event_controller = NodePath("../EventController")
+focus_fov = 35.0
+audio_keyboard_sfx = NodePath("../KeyboardSFX")
 
-[node name="monitor_right" parent="." instance=ExtResource("3_tqooo")]
-transform = Transform3D(0.430413, 0.054711, -0.248499, -0.0671498, 0.495418, -0.00723264, 0.24543, 0.0395993, 0.433816, 2.45339, 5.68265, 2.15138)
-focus_fov = 15.0
-origin_offset = Vector3(0, 0.3, 0)
-computer_type = "monitor"
+[node name="MonitorReceive" parent="." node_paths=PackedStringArray("event_controller", "audio_keyboard_sfx") instance=ExtResource("5_kwmd8")]
+transform = Transform3D(0.430413, 0.054711074, -0.24849886, -0.0671498, 0.49541804, -0.00723266, 0.24542998, 0.03959934, 0.43381605, 2.45339, 5.68265, 2.15138)
+event_controller = NodePath("../EventController")
+focus_fov = 25.0
+origin_offset = Vector3(0, 0.25, 0)
+audio_keyboard_sfx = NodePath("../KeyboardSFX")
+
+[node name="Printer" parent="." instance=ExtResource("6_v48e1")]
+transform = Transform3D(0.73896116, 0, -0.673748, 0, 1, 0, 0.673748, 0, 0.73896116, 3.346477, 3.7092776, 2.112733)
 
 [node name="KeyboardSFX" type="AudioStreamPlayer3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.0667236, 3.6976953, 4.1002426)
@@ -237,3 +254,5 @@ volume_db = -30.0
 unit_size = 5.0
 autoplay = true
 bus = &"music"
+
+[connection signal="pass_command_eventcontroller" from="MonitorInput" to="EventController" method="_on_monitor_input_pass_command_eventcontroller"]
