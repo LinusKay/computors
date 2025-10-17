@@ -1,7 +1,7 @@
-[gd_scene load_steps=10 format=3 uid="uid://l3l8std3wcxc"]
+[gd_scene load_steps=11 format=3 uid="uid://l3l8std3wcxc"]
 
 [ext_resource type="PackedScene" uid="uid://ct07h20p64f4m" path="res://model/old_computer.fbx" id="1_0ac0h"]
-[ext_resource type="Script" uid="uid://fcvs1kw8emjm" path="res://script/computer.gd" id="2_t0qmx"]
+[ext_resource type="Script" uid="uid://byskaii40tg42" path="res://scene/object/monitor_input.gd" id="2_b4eie"]
 [ext_resource type="Shader" uid="uid://dpcocmg7b2mm1" path="res://shader/holo.gdshader" id="3_6wsn7"]
 [ext_resource type="Theme" uid="uid://rls2qjbal6dt" path="res://style/terminal.tres" id="4_qicgd"]
 [ext_resource type="Script" uid="uid://dled41oea2gde" path="res://script/terminal_input.gd" id="5_b4eie"]
@@ -18,9 +18,13 @@ shader_parameter/color_compression = 6.0
 
 [sub_resource type="LabelSettings" id="LabelSettings_b4eie"]
 font_size = 25
+font_color = Color(0.3882353, 0, 0.32156864, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_gsa0n"]
+font_size = 25
 
 [node name="monitor_input" instance=ExtResource("1_0ac0h")]
-script = ExtResource("2_t0qmx")
+script = ExtResource("2_b4eie")
 
 [node name="desk" parent="." index="0"]
 layers = 2
@@ -66,7 +70,21 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.3882353, 0, 0.32156864, 1)
 
-[node name="ScrollContainer" type="ScrollContainer" parent="Screen/SubViewportContainer/SubViewport/Control" index="1"]
+[node name="ColorRect2" type="ColorRect" parent="Screen/SubViewportContainer/SubViewport/Control" index="1"]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 18.0
+offset_top = -11.5
+offset_right = -18.0
+offset_bottom = 42.5
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.9272859, 0.6154202, 0.3533984, 1)
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Screen/SubViewportContainer/SubViewport/Control" index="2"]
 visible = false
 custom_minimum_size = Vector2(0, 470)
 layout_mode = 0
@@ -83,7 +101,7 @@ text = "GombuComp [Version 5.3.05943.234]
 (c) Gombudor Corporation. All rights reserved."
 autowrap_mode = 1
 
-[node name="TerminalInput" type="HBoxContainer" parent="Screen/SubViewportContainer/SubViewport/Control" index="2"]
+[node name="TerminalInput" type="HBoxContainer" parent="Screen/SubViewportContainer/SubViewport/Control" index="3"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -91,7 +109,7 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -264.0
-offset_top = -31.0
+offset_top = -2.5
 offset_right = 264.0
 offset_bottom = 31.0
 grow_horizontal = 2
@@ -100,7 +118,7 @@ grow_vertical = 2
 [node name="Label" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/TerminalInput" index="0"]
 layout_mode = 2
 size_flags_vertical = 1
-text = "@>"
+text = "INPUT COMMAND:"
 label_settings = SubResource("LabelSettings_b4eie")
 vertical_alignment = 1
 
@@ -110,11 +128,31 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme = ExtResource("4_qicgd")
 theme_override_font_sizes/font_size = 25
-text = "fdgsdfgsdfgdf"
 caret_type = 1
 caret_blink = true
 caret_draw_when_editable_disabled = true
 caret_mid_grapheme = true
+
+[node name="SuccessMargin" type="MarginContainer" parent="Screen/SubViewportContainer/SubViewport/Control" index="4"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 25.0
+grow_horizontal = 2
+theme_override_constants/margin_top = 20
+
+[node name="SuccessLabel" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/SuccessMargin" index="0"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "COMMAND ACCEPTED"
+label_settings = SubResource("LabelSettings_gsa0n")
+horizontal_alignment = 1
+
+[node name="SuccessTimer" type="Timer" parent="Screen/SubViewportContainer/SubViewport/Control/SuccessMargin" index="1"]
+unique_name_in_owner = true
+wait_time = 2.0
+one_shot = true
 
 [node name="AudioComputerHum" type="AudioStreamPlayer3D" parent="." index="3"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.91215456, 0.9014982, -2.1472933)
@@ -125,3 +163,4 @@ bus = &"sfx"
 
 [connection signal="command_input" from="Screen/SubViewportContainer/SubViewport/Control" to="." method="_on_control_command_input"]
 [connection signal="gui_input" from="Screen/SubViewportContainer/SubViewport/Control/TerminalInput/TextEdit" to="Screen/SubViewportContainer/SubViewport/Control" method="_on_text_edit_gui_input"]
+[connection signal="timeout" from="Screen/SubViewportContainer/SubViewport/Control/SuccessMargin/SuccessTimer" to="." method="_on_success_timer_timeout"]

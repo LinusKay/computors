@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://cl2usnc72xk22"]
+
+[ext_resource type="PackedScene" uid="uid://b1n3yi33e3wqc" path="res://model/drinkingbird.glb" id="1_2yt7c"]
+
+[node name="drinkingbird" instance=ExtResource("1_2yt7c")]
+
+[node name="Connecting_Band" parent="." index="3"]
+transform = Transform3D(0.998307, 0.037235957, 0.044684216, 0.04471523, -2.364953e-07, -0.9989999, -0.037198696, 0.9993066, -0.0016652504, -0.014592535, 0.050723247, -0.0009073648)
+
+[node name="AnimationPlayer" parent="." index="4"]
+autoplay = "Connecting_BandAction"

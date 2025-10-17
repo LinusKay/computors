@@ -69,4 +69,5 @@ func _ready() -> void:
 	update_visual_context()
 	
 func update_visual_context() -> void:
-	$TerminalInput/Label.text = current_context.user_name + "@" + current_context.device_name + ">"
+	#$TerminalInput/Label.text = current_context.user_name + "@" + current_context.device_name + ">"
+	$TerminalInput/Label.text = "INPUT COMMAND> "

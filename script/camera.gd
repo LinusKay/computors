@@ -27,8 +27,8 @@ func _set_focus_target(_focus_target: Node3D) -> void:
 	focus_target_pos = _focus_target.get_node("focus_origin").global_transform.origin
 	focus_target_fov = _focus_target.focus_fov
 	
-	var terminal_input = _focus_target.get_node("Screen/SubViewportContainer/SubViewport/Control/MarginContainer/TerminalInput/TextEdit")
-	if terminal_input != null:
+	if _focus_target.has_node("Screen/SubViewportContainer/SubViewport/Control/TerminalInput/TextEdit"):
+		var terminal_input = _focus_target.get_node("Screen/SubViewportContainer/SubViewport/Control/TerminalInput/TextEdit")
 		terminal_input.grab_focus()
 
 
@@ -57,9 +57,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			if focus_index > focus_array_selected.size() - 1: focus_index = 0
 			if focus_index < 0: focus_index = focus_array_selected.size() - 1
 			_set_focus_target(focus_array_selected[focus_index])
-	
-	var focus_input = focus_target.get_node("Screen/SubViewportContainer/SubViewport")
-	if focus_input != null:
+			
+	if focus_target.has_node("Screen/SubViewportContainer/SubViewport"):
+		var focus_input = focus_target.get_node("Screen/SubViewportContainer/SubViewport")
 		focus_input.push_input(event)
 
 

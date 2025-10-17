@@ -50,7 +50,6 @@ viewport_path = NodePath("Screen/SubViewportContainer/SubViewport")
 
 [sub_resource type="LabelSettings" id="LabelSettings_dujnw"]
 font_size = 250
-font_color = Color(0, 0, 1, 1)
 
 [node name="monitor_receive" instance=ExtResource("1_dujnw")]
 script = ExtResource("2_6m5xi")
@@ -105,8 +104,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+color = Color(0, 0, 0, 1)
 
 [node name="MessageLabel" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control" index="1"]
+unique_name_in_owner = true
 visible = false
 layout_mode = 1
 anchors_preset = 8

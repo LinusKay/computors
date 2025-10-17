@@ -1,13 +1,16 @@
-[gd_scene load_steps=34 format=3 uid="uid://cdlbuouhdddtl"]
+[gd_scene load_steps=40 format=3 uid="uid://cdlbuouhdddtl"]
 
-[ext_resource type="Script" uid="uid://dgytay7sgen8k" path="res://scene/object/event_controller.gd" id="1_1ebx5"]
+[ext_resource type="Script" uid="uid://dgytay7sgen8k" path="res://script/event_controller.gd" id="1_1ebx5"]
 [ext_resource type="PackedScene" uid="uid://bl3l8std3wcxc" path="res://scene/object/monitor_reference.tscn" id="3_tqooo"]
 [ext_resource type="Script" uid="uid://b3suwn2fq5iq2" path="res://script/camera.gd" id="4_4gbmn"]
 [ext_resource type="PackedScene" uid="uid://l3l8std3wcxc" path="res://scene/object/monitor_input.tscn" id="4_kwmd8"]
 [ext_resource type="PackedScene" uid="uid://rsb4ts8uca4q" path="res://scene/object/desk.tscn" id="5_748lb"]
 [ext_resource type="PackedScene" uid="uid://dmesnq886wffc" path="res://scene/object/monitor_receive.tscn" id="5_kwmd8"]
 [ext_resource type="Texture2D" uid="uid://cr8c513j6ht4o" path="res://sprite/beige_wall_002_diff_4k_1024.jpg" id="5_n25k3"]
+[ext_resource type="Texture2D" uid="uid://cxo4hktnag4a6" path="res://sprite/stickynote.png" id="5_q1wis"]
 [ext_resource type="Texture2D" uid="uid://drnsclleylmw6" path="res://sprite/Sabby_Jam25-01.png" id="5_wo72k"]
+[ext_resource type="Script" uid="uid://byskaii40tg42" path="res://scene/object/monitor_input.gd" id="5_yh23u"]
+[ext_resource type="Script" uid="uid://dix5328liuuij" path="res://scene/object/monitor_receive.gd" id="6_hlyc2"]
 [ext_resource type="PackedScene" uid="uid://cuo0ptgeuqwut" path="res://scene/object/printer.tscn" id="6_v48e1"]
 [ext_resource type="Texture2D" uid="uid://0ig0aupfeixp" path="res://sprite/goldring.jpg" id="7_godbb"]
 [ext_resource type="AudioStream" uid="uid://bnns1brgbb6ux" path="res://audio/sfx/typing/keypress-001.ogg" id="8_55vyt"]
@@ -15,9 +18,12 @@
 [ext_resource type="AudioStream" uid="uid://cbl2iteskcmgk" path="res://audio/sfx/typing/keypress-003.ogg" id="10_2ikf2"]
 [ext_resource type="AudioStream" uid="uid://yv1g4c3jc683" path="res://audio/sfx/typing/keypress-004.ogg" id="11_1ebx5"]
 [ext_resource type="AudioStream" uid="uid://bay7eaf8bcme" path="res://audio/sfx/typing/keypress-005.ogg" id="12_kwmd8"]
-[ext_resource type="Script" uid="uid://ojtwmd1q04p4" path="res://scene/object/keyboard_sfx.gd" id="13_v48e1"]
+[ext_resource type="Script" uid="uid://ojtwmd1q04p4" path="res://script/keyboard_sfx.gd" id="13_v48e1"]
 [ext_resource type="AudioStream" uid="uid://ccj3uq72ulslq" path="res://audio/sfx/ambient/ambience-roomtone-33-404108.ogg" id="14_lxju4"]
 [ext_resource type="AudioStream" uid="uid://c3g8jvim6otad" path="res://audio/sfx/music/E-adevărat, iubirea mea - Mihaela Runceanu.mp3" id="15_2ikf2"]
+[ext_resource type="PackedScene" uid="uid://cl2usnc72xk22" path="res://scene/object/drinkingbird.tscn" id="20_xx0le"]
+[ext_resource type="PackedScene" uid="uid://cf5hodrf1165c" path="res://model/mug.glb" id="21_8envh"]
+[ext_resource type="AudioStream" uid="uid://dylj42bdns8ug" path="res://audio/sfx/music/whwhwhwhwhwh.ogg" id="22_q4r0l"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_jygjw"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -143,16 +149,21 @@ audio_keyboard_sfx = NodePath("../KeyboardSFX")
 
 [node name="MonitorInput" parent="." node_paths=PackedStringArray("event_controller", "audio_keyboard_sfx") instance=ExtResource("4_kwmd8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6428585, 3.592045, 4.248417)
+script = ExtResource("5_yh23u")
 event_controller = NodePath("../EventController")
 focus_fov = 35.0
 audio_keyboard_sfx = NodePath("../KeyboardSFX")
 
 [node name="MonitorReceive" parent="." node_paths=PackedStringArray("event_controller", "audio_keyboard_sfx") instance=ExtResource("5_kwmd8")]
 transform = Transform3D(0.430413, 0.054711074, -0.24849886, -0.0671498, 0.49541804, -0.00723266, 0.24542998, 0.03959934, 0.43381605, 2.45339, 5.68265, 2.15138)
+script = ExtResource("6_hlyc2")
 event_controller = NodePath("../EventController")
-focus_fov = 25.0
-origin_offset = Vector3(0, 0.25, 0)
+focus_fov = 35.0
 audio_keyboard_sfx = NodePath("../KeyboardSFX")
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+transform = Transform3D(0.21604162, 3.178773e-10, 5.35193e-12, -3.1787728e-10, 0.2159192, 0.0072721853, 5.35193e-12, -0.0072721853, 0.2159192, 2.433542, 4.38782, 2.7317486)
+texture = ExtResource("5_q1wis")
 
 [node name="Printer" parent="." instance=ExtResource("6_v48e1")]
 transform = Transform3D(0.73896116, 0, -0.673748, 0, 1, 0, 0.673748, 0, 0.73896116, 3.346477, 3.7092776, 2.112733)
@@ -247,11 +258,21 @@ libraries = {
 }
 autoplay = "lighthouse"
 
+[node name="drinkingbird" parent="." instance=ExtResource("20_xx0le")]
+transform = Transform3D(-4.330127, 0, -2.5000002, 0, 5, 0, 2.5000002, 0, -4.330127, 3.1084962, 4.0198703, 2.2878602)
+
+[node name="mug" parent="." instance=ExtResource("21_8envh")]
+transform = Transform3D(-0.1462527, 0, -0.16786543, 0, 0.2226402, 0, 0.16786543, 0, -0.1462527, 3.5526023, 3.8492484, 1.9235854)
+
 [node name="AudioMusicDiagetic" type="AudioStreamPlayer3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.997726, 6.9972363, 6.8014183)
 stream = ExtResource("15_2ikf2")
 volume_db = -30.0
 unit_size = 5.0
+bus = &"music"
+
+[node name="AudioMusicNonDiagetic" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("22_q4r0l")
 autoplay = true
 bus = &"music"
 

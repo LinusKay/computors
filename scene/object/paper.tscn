@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://cdw7kddflp0yf"]
+[gd_scene load_steps=7 format=3 uid="uid://cdw7kddflp0yf"]
 
-[ext_resource type="Script" uid="uid://c1ob218vc3vmt" path="res://scene/object/paper.gd" id="2_nobtx"]
+[ext_resource type="AudioStream" uid="uid://cmi6olpcuvydk" path="res://audio/sfx/printer/print_start.ogg" id="2_381bj"]
+[ext_resource type="Script" uid="uid://c1ob218vc3vmt" path="res://paper.gd" id="2_nobtx"]
 
 [sub_resource type="Animation" id="Animation_pnjay"]
 length = 0.001
@@ -81,7 +82,7 @@ _data = {
 }
 
 [node name="Paper" type="Sprite3D"]
-transform = Transform3D(-2.6226832e-09, -0.056381553, 0.020521222, 0, 0.020521222, 0.056381553, -0.06, 2.464516e-09, -8.970111e-10, 1.0681977, -0.043147087, 0)
+transform = Transform3D(-2.6226832e-09, -0.056381557, 0.020521222, 0, 0.020521222, 0.056381557, -0.06, 2.4645161e-09, -8.9701113e-10, 1.0681977, -0.043147087, 0)
 script = ExtResource("2_nobtx")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
@@ -96,7 +97,12 @@ one_shot = true
 [node name="PauseTimer" type="Timer" parent="."]
 one_shot = true
 
+[node name="PrintAudio" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(16.666668, -1.1368684e-13, -2.842171e-14, 0, 16.666664, -9.536743e-07, -2.842171e-14, 4.7683716e-07, 16.666664, 7.787984e-07, 16.742342, -6.093718)
+stream = ExtResource("2_381bj")
+
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_animation_player_animation_finished"]
 [connection signal="animation_started" from="AnimationPlayer" to="." method="_on_animation_player_animation_started"]
 [connection signal="timeout" from="PauseDelayTimer" to="." method="_on_pause_delay_timer_timeout"]
 [connection signal="timeout" from="PauseTimer" to="." method="_on_pause_timer_timeout"]
+[connection signal="finished" from="PrintAudio" to="." method="_on_print_audio_finished"]

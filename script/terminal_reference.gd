@@ -313,7 +313,7 @@ func _on_text_edit_gui_input(event: InputEvent) -> void:
 			if command_history_index < 0: 
 				command_history_index = 0
 			%TerminalInput/TextEdit.text = command_history[command_history_index]
-			%TerminalInput/TextEdit.set_caret_column(10, false, 10)
+			%TerminalInput/TextEdit.set_caret_column(10)
 	elif event.is_action_pressed("ui_down"):
 		var history_size = command_history.size()
 		if history_size > 0:
@@ -321,7 +321,7 @@ func _on_text_edit_gui_input(event: InputEvent) -> void:
 			if command_history_index < 0: 
 				command_history_index = 0
 			%TerminalInput/TextEdit.text = command_history[command_history_index]
-			%TerminalInput/TextEdit.set_caret_column(10, false, 10)
+			%TerminalInput/TextEdit.set_caret_column(10)
 	audio_keyboard_sfx.play()
 	
 
@@ -336,20 +336,28 @@ func _ready() -> void:
 	current_context.working_directory = current_context.root_directory
 	
 	current_context.root_directory.child_files = [
-		Document.new("keywords.txt", current_context.root_directory),
+		Document.new("commands.txt", current_context.root_directory),
 		Document.new("sheet.png", current_context.root_directory),
 		Document.new("sheet2.png", current_context.root_directory),
 	]
+	#current_context.root_directory.child_files[0].set_content(
+		#"┌────────┬──────────────────────────────────────┐\n" +
+		#"│ Letter   │ Keyword                                       │\n" +
+		#"├────────┼──────────────────────────────────────┤\n" +
+		#"│ A        │ MOUNTAIN                                      │\n" +
+		#"├────────┼──────────────────────────────────────┤\n" +
+		#"│ B        │ WALRUS                                        │\n" +
+		#"├────────┼──────────────────────────────────────┤\n" +
+		#"│ C        │ WALRUS                                        │\n" +
+		#"└────────┴──────────────────────────────────────┘"
+	#)
 	current_context.root_directory.child_files[0].set_content(
-		"┌────────┬──────────────────────────────────────┐\n" +
-		"│ Letter   │ Keyword                                       │\n" +
-		"├────────┼──────────────────────────────────────┤\n" +
-		"│ A        │ MOUNTAIN                                      │\n" +
-		"├────────┼──────────────────────────────────────┤\n" +
-		"│ B        │ WALRUS                                        │\n" +
-		"├────────┼──────────────────────────────────────┤\n" +
-		"│ C        │ WALRUS                                        │\n" +
-		"└────────┴──────────────────────────────────────┘"
+			'"A236D": "MOUNTAIN"\n' +
+			'"B38HE": "RIVER"\n' +
+			'"C48E2": "MOSQUITO"\n' +
+			'"D12H1": "GRIZZLY"\n' +
+			'"E01D3": "NETWORK"\n' +
+			'"F10BA": "TERMINAL"'
 	)
 	current_context.root_directory.child_files[1].set_content("res://sprite/sheet.png")
 	current_context.root_directory.child_files[2].set_content("res://sprite/LEVELDATASHEETREPORT.png")
