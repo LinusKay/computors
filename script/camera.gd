@@ -19,7 +19,7 @@ var pullback_fov_offset: float = 20
 var focus_snap: bool = false
 
 const FOV_SMOOTH_RATE: float = .3
-const CAMERA_SMOOTH_RATE: float = 10.0
+const CAMERA_SMOOTH_RATE: float = 10
 
 func _set_focus_target(_focus_target: Node3D) -> void:
 	focus_target = _focus_target

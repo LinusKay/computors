@@ -1,8 +1,9 @@
-[gd_scene load_steps=11 format=3 uid="uid://l3l8std3wcxc"]
+[gd_scene load_steps=16 format=3 uid="uid://l3l8std3wcxc"]
 
 [ext_resource type="PackedScene" uid="uid://ct07h20p64f4m" path="res://model/old_computer.fbx" id="1_0ac0h"]
-[ext_resource type="Script" uid="uid://byskaii40tg42" path="res://scene/object/monitor_input.gd" id="2_b4eie"]
+[ext_resource type="Script" uid="uid://byskaii40tg42" path="res://script/monitor_input.gd" id="2_b4eie"]
 [ext_resource type="Shader" uid="uid://dpcocmg7b2mm1" path="res://shader/holo.gdshader" id="3_6wsn7"]
+[ext_resource type="FontFile" uid="uid://c44f6qlxjph8p" path="res://font/vt323-latin-400-normal.ttf" id="4_gsa0n"]
 [ext_resource type="Theme" uid="uid://rls2qjbal6dt" path="res://style/terminal.tres" id="4_qicgd"]
 [ext_resource type="Script" uid="uid://dled41oea2gde" path="res://script/terminal_input.gd" id="5_b4eie"]
 [ext_resource type="AudioStream" uid="uid://c17x2345flopj" path="res://audio/sfx/ambient/computer-humming-236384.ogg" id="6_ejpe2"]
@@ -15,6 +16,20 @@ render_priority = 0
 shader = ExtResource("3_6wsn7")
 shader_parameter/normal_depth = 0.25
 shader_parameter/color_compression = 6.0
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3mf4l"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_4tbk0"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_irwit"]
+
+[sub_resource type="Theme" id="Theme_gsa0n"]
+default_font = ExtResource("4_gsa0n")
+default_font_size = 15
+Label/colors/font_color = Color(1, 1, 1, 1)
+TextEdit/styles/focus = SubResource("StyleBoxEmpty_3mf4l")
+TextEdit/styles/normal = SubResource("StyleBoxEmpty_4tbk0")
+TextEdit/styles/read_only = SubResource("StyleBoxEmpty_irwit")
 
 [sub_resource type="LabelSettings" id="LabelSettings_b4eie"]
 font_size = 25
@@ -58,7 +73,7 @@ grow_horizontal = 2
 grow_vertical = 2
 focus_mode = 2
 mouse_filter = 1
-theme = ExtResource("4_qicgd")
+theme = SubResource("Theme_gsa0n")
 script = ExtResource("5_b4eie")
 
 [node name="ColorRect" type="ColorRect" parent="Screen/SubViewportContainer/SubViewport/Control" index="0"]
@@ -127,6 +142,7 @@ custom_minimum_size = Vector2(0, 17)
 layout_mode = 2
 size_flags_horizontal = 3
 theme = ExtResource("4_qicgd")
+theme_override_colors/font_color = Color(0.3882353, 0, 0.32156864, 1)
 theme_override_font_sizes/font_size = 25
 caret_type = 1
 caret_blink = true

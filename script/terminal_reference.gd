@@ -3,6 +3,7 @@ extends Control
 @onready var terminal_log: VBoxContainer = %TerminalLog
 @onready var audio_keyboard_sfx: AudioStreamPlayer3D = get_node("/root/Node3D/KeyboardSFX")
 @onready var printer: CSGBox3D = get_node("/root/Node3D/Printer")
+@onready var speaker: CSGBox3D = get_node("/root/Node3D/Speaker")
 
 var command_history = []
 var command_history_index = 0
@@ -16,6 +17,10 @@ const SCROLL_DISTANCE = 75
 var drives := []
 var drive_connected = false
 
+var audio_loaded := false
+var audio_file: AudioStream = null
+var audio_file_name := ""
+
 # https://gist.github.com/awhiskin/b1d752e57f75319029c222bb4c14709a
 class Context:
 	var user_name := "USER"
@@ -24,6 +29,7 @@ class Context:
 	var working_directory: Folder
 	var root_directory: Folder
 	var date := "2025-07-30"
+	var password := ""
 
 class Folder:
 	var folder_path: String
@@ -110,11 +116,133 @@ var commands = {
 	"drives": {
 		"description": "\n     View a list of shared drives to connect to.",
 		"func": "_cmd_drives",
-		"args": ["<connect disconnect list>", "[drive_name]"],
+		"args": ["connect <drive_name> [username:password]", "disconnect", "list"],
 		"alias": ["shares", "drive", "drives", "drv", "shr", "//"]
 	},
-	
+	"audio": {
+		"description": "\n     Control audio playback\n     Volume in dB from -80 to 0.",
+		"func": "_cmd_audio",
+		"args": ["load [file]", "play", "pause", "stop", "unload", "pitch <pitch_value>", "volume <-80 - 0>"],
+		"alias": ["sound"]
+	}
 }
+
+
+func _cmd_audio(_args: String) -> bool:
+	var _args_split = _args.strip_edges().to_lower().split(" ")
+	if _args_split.size() > 0 and _args_split[0] != "":
+		var operation = _args_split[0]
+		if operation == "load":
+			if _args_split.size() < 2:
+				_error("FILE_NOT_SPECIFIED")
+				return false
+			var file_name = _args_split[1]
+			var files = current_context.working_directory.child_files
+			for file in files:
+				if file.to_string().to_lower() == file_name:
+					var file_name_split = file_name.split(".")
+					if file_name_split.size() == 0:
+						_error("NOT_AN_AUDIO_FILE")
+						return false
+					var file_ext = file_name_split[1]
+					if not ["wav", "ogg", "mp3"].has(file_ext):
+						_error("NOT_AN_AUDIO_FILE")
+						return false
+					audio_file = load(file.content)
+					audio_file_name = file_name
+					speaker.load_audio(audio_file)
+					audio_loaded = true
+					_new_log("Loaded audio file " + audio_file_name + "into memory.")
+					return true
+			_error("FILE_NOT_FOUND")
+			return false	
+			
+		elif operation == "play":
+			if !audio_loaded:
+				_error("NO_AUDIO_LOADED")
+				return false
+			if audio_file == null:
+				_error("NO_AUDIO_LOADED")
+				return false
+			speaker.play()
+			_new_log("Playing audio")
+			return true
+			
+		elif operation == "pause":
+			if !audio_loaded:
+				_error("NO_AUDIO_LOADED")
+				return false
+			if audio_file == null:
+				_error("NO_AUDIO_LOADED")
+				return false
+			speaker.pause()
+			_new_log("Pausing audio.")
+			return true
+			
+		elif operation == "stop":
+			if !audio_loaded:
+				_error("NO_AUDIO_LOADED")
+				return false
+			if audio_file == null:
+				_error("NO_AUDIO_LOADED")
+				return false
+			speaker.stop()
+			_new_log("Stopping audio.")
+			return true
+			
+		elif operation == "unload":
+			if !audio_loaded:
+				_error("NO_AUDIO_LOADED")
+				return false
+			if audio_file == null:
+				_error("NO_AUDIO_LOADED")
+				return false
+			_new_log("Unloading audio file " + audio_file_name + " from memory.")
+			speaker.stop()
+			audio_file = null
+			audio_file_name = ""
+			audio_loaded = false
+			return true
+			
+		elif operation == "pitch":
+			if _args_split.size() < 2:
+				_error("NOT_ENOUGH_ARGS")
+				return false
+			var pitch_value = _args_split[1]
+			if !pitch_value.is_valid_float():
+				if pitch_value == "reset":
+					pitch_value = 1
+				else:
+					_error("VALUE_NOT_NUMERIC")
+					return false
+			speaker.pitch(float(pitch_value))
+			_new_log("Set audio pitch value to " + str(pitch_value))
+			return true
+			
+		elif operation == "volume":
+			if _args_split.size() < 2:
+				_error("NOT_ENOUGH_ARGS")
+				return false
+			var volume_value = _args_split[1]
+			if !volume_value.is_valid_float():
+				if volume_value == "reset":
+					volume_value = 1
+				else:
+					_error("VALUE_NOT_NUMERIC")
+					return false
+			volume_value = float(volume_value)
+			if volume_value > 0 or volume_value < -80:
+				_error("VALUE_OUT_OF_BOUNDS")
+				return false
+				
+			speaker.volume(volume_value)
+			_new_log("Set audio volume value to " + str(volume_value))
+			return true
+		else:
+			_error("UNRECOGNISED_OPERATION")
+			return false
+	_error("NOT_ENOUGH_ARGS")
+	return false
 
 
 func _cmd_drives(_args: String) -> bool:
@@ -129,6 +257,14 @@ func _cmd_drives(_args: String) -> bool:
 				# Check if drive exists, else fail
 				for drive in drives:
 					if drive.drive_name.to_lower() == drive_name:
+						if drive.password != "":
+							if _args_split.size() <= 2:
+								_error("LOGIN_NOT_GIVEN")
+								return false
+							else: 
+								if _args_split[2] != drive.password:
+									_error("LOGIN_NOT_AUTHORISED")
+									return false
 						_new_log("Connected to drive " + drive_name.to_upper() + " successfully")
 						current_context = drive
 						drive_connected = true
@@ -139,7 +275,7 @@ func _cmd_drives(_args: String) -> bool:
 			else: 
 				_error("NOT_ENOUGH_ARGS")
 				return false
-		elif operation == "disconnect" or operation == "-":
+		elif operation == "disconnect" or operation == "-" or operation == "exit" or operation == "quit":
 			if drive_connected == false:
 				_error("DRIVE_NOT_CONNECTED")
 				return false
@@ -168,18 +304,17 @@ func _drives_list() -> void:
 
 func _cmd_print(_args: String) -> bool:
 	var input_image = _args.split(" ")[0]
-	print(input_image)
 	if input_image.length() == 0: 
 		_error("NOT_ENOUGH_ARGS")
 		return false
 		
 	var input_image_ext_split = input_image.split(".")
 	if input_image_ext_split.size() < 2:
-		_error("NOT_AN_IMAGE")
+		_error("NOT_AN_IMAGE_FILE")
 		return false
 	var input_image_ext = input_image_ext_split[1]
 	if not ["png", "jpg", "bmp"].has(input_image_ext.to_lower()):
-		_error("NOT_AN_IMAGE")
+		_error("NOT_AN_IMAGE_FILE")
 		return false
 		
 	var documents = current_context.working_directory.child_files
@@ -259,8 +394,14 @@ func _cmd_help(_args: String) -> void:
 			if commands[command].has("alias"):
 				aliases = " (" + ", ".join(commands[command].alias) + ")"
 			if commands[command].has("args"):
-				args = " ".join(commands[command].args)
-			_new_log(command + " " + args + "     " + commands[command].description + aliases)
+				if commands[command]["args"].size() == 1:
+					args = commands[command].args[0]
+					_new_log(command + " " + args + "     " + commands[command].description + aliases)
+				else:
+					args = "\n     - " + "\n     - ".join(commands[command].args)
+					_new_log(command + "     " + commands[command].description + args + aliases)
+			else:
+				_new_log(command + "     " + commands[command].description + aliases)
 
 
 func _cmd_colour(_colour_code: String) -> bool:
@@ -305,11 +446,18 @@ func _error(_error_type: String) -> void:
 		"FILE_NOT_FOUND": "Cannot find the path specified.",
 		"NOT_ENOUGH_ARGS": "Not enough arguments provided",
 		"INTERNAL_ERROR": "An internal error has occured.",
-		"NOT_AN_IMAGE": "Given file not an image (JPG, PNG, BMP).",
+		"NOT_AN_IMAGE_FILE": "Given file not an image (JPG, PNG, BMP).",
 		"NOT_A_TEXT_FILE": "Given file not a text file (TXT, DOC, MD, PDF).",
+		"NOT_AN_AUDIO_FILE": "Given file not an audio file (WAV, MP3, OGG).",
 		"PRINT_IN_PROGRESS": "A print operation is already in progress.",
 		"DRIVE_NOT_FOUND": "Cannot find the drive specified.",
 		"DRIVE_NOT_CONNECTED": "Not currently connected to any drive.",
+		"LOGIN_NOT_GIVEN": "Drive protected, please supply login.",
+		"LOGIN_NOT_AUTHORISED": "Drive protected, given login unauthorised.",
+		"FILE_NOT_SPECIFIED": "No file has been specified.",
+		"NO_AUDIO_LOADED": "No audio file has been loaded into memory.",
+		"VALUE_NOT_NUMERIC": "Input value is not numeric.",
+		"VALUE_OUT_OF_BOUNDS": "Input value is out of allowed bounds."
 	}
 	if error_types.has(_error_type): _new_log(error_types[_error_type])
 	else: _new_log(error_types[_error_type])
@@ -320,7 +468,6 @@ func _new_log(log_text: String) -> void:
 	new_log.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	new_log.custom_minimum_size = Vector2(640, 0)
 	log_text = log_text.replace(" ", "\u00A0")
-	print(log_text)
 	new_log.text = log_text
 	terminal_log.add_child(new_log)
 
@@ -409,28 +556,27 @@ func setup_contexts() -> void:
 	context_home.working_directory = context_home.root_directory
 	
 	context_home.root_directory.child_files = [
-		Document.new("commands.txt", context_home.root_directory),
 		Document.new("sheet.png", context_home.root_directory),
 		Document.new("sheet2.png", context_home.root_directory),
+		Document.new("print_stall1.ogg", context_home.root_directory)
 	]
-	context_home.root_directory.child_files[0].set_content(
-			'"A236D": "MOUNTAIN"\n' +
-			'"B38HE": "RIVER"\n' +
-			'"C48E2": "MOSQUITO"\n' +
-			'"D12H1": "GRIZZLY"\n' +
-			'"E01D3": "NETWORK"\n' +
-			'"F10BA": "TERMINAL"'
-	)
-	context_home.root_directory.child_files[1].set_content("res://sprite/sheet.png")
-	context_home.root_directory.child_files[2].set_content("res://sprite/LEVELDATASHEETREPORT.png")
+	context_home.root_directory.child_files[0].set_content("res://sprite/sheet.png")
+	context_home.root_directory.child_files[1].set_content("res://sprite/LEVELDATASHEETREPORT.png")
+	context_home.root_directory.child_files[2].set_content("res://audio/sfx/printer/print_mid.ogg")
 	context_home.root_directory.subdirectories[0].child_files = [
-		Document.new("message.txt", context_home.root_directory.subdirectories[0])
+		Document.new("creds.txt", context_home.root_directory.subdirectories[0])
 	]
+	context_home.root_directory.subdirectories[0].child_files[0].set_content(
+		"DO NOT SHARE OR UPLOAD\n" +
+		"Login credentials: jason:pass"
+	)
 	current_context = context_home
 	
 	# DRIVE CONTEXT SETUP
 	context_drive_storage = Context.new()
 	context_drive_storage.drive_name = "STORAGE"
+	context_drive_storage.user_name = "jason"
+	context_drive_storage.password = "jason:pass"
 	context_drive_storage.root_directory = Folder.new("", null)
 	context_drive_storage.root_directory.subdirectories = [
 		Folder.new("docs", context_drive_storage.root_directory),
@@ -438,10 +584,16 @@ func setup_contexts() -> void:
 	context_drive_storage.working_directory = context_drive_storage.root_directory
 
 	context_drive_storage.root_directory.child_files = [
-		Document.new("storage.txt", context_drive_storage.root_directory)
+		Document.new("keywords.txt", context_drive_storage.root_directory)
 	]
 	context_drive_storage.root_directory.child_files[0].set_content(
-		"STORAGE drive document - PRIVATE"
+		'INPUT terminal requires specific values corresponding to MONITOR screen:\n' +
+		'"A236D": "MOUNTAIN"\n' +
+		'"B38HE": "RIVER"\n' +
+		'"C48E2": "MOSQUITO"\n' +
+		'"D12H1": "GRIZZLY"\n' +
+		'"E01D3": "NETWORK"\n' +
+		'"F10BA": "TERMINAL"'
 	)
 	drives.append(context_drive_storage)
 	

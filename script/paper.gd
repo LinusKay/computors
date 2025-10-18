@@ -68,7 +68,6 @@ func _on_animation_player_animation_started(anim_name: StringName) -> void:
 
 
 func _on_print_audio_finished() -> void:
-	print("audio finished")
 	if $PrintAudio.stream == sfx_print_start:
 		$PrintAudio.stream = sfx_print_mid
 		$PrintAudio.play()

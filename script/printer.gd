@@ -7,6 +7,9 @@ extends CSGBox3D
 
 @export var printing: bool = false
 
+var desired_width = 82
+var desired_height = 116
+
 func _ready() -> void:
 	$focus_origin.position = $focus_origin.position + origin_offset
 
@@ -19,5 +22,7 @@ func print(image: Resource) -> void:
 	var new_printout = paper.instantiate()
 	$printouts.add_child(new_printout)
 	new_printout.texture = image
+	new_printout.scale.x = float(desired_width) / float(image.get_width())
+	new_printout.scale.y = float(desired_height) / float(image.get_height())
 	var new_printout_animationplayer = new_printout.get_node("AnimationPlayer")
 	new_printout_animationplayer.play("paper_print")

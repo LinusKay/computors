@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cuo0ptgeuqwut"]
 
-[ext_resource type="Script" uid="uid://j4k8n65i2w83" path="res://printer.gd" id="1_irj2u"]
+[ext_resource type="Script" uid="uid://j4k8n65i2w83" path="res://script/printer.gd" id="1_irj2u"]
 
 [node name="PrinterPlaceholder" type="CSGBox3D"]
 transform = Transform3D(0.73896116, 0, -0.673748, 0, 1, 0, 0.673748, 0, 0.73896116, 0, 0, 0)

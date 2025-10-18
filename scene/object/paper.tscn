@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://cdw7kddflp0yf"]
 
 [ext_resource type="AudioStream" uid="uid://cmi6olpcuvydk" path="res://audio/sfx/printer/print_start.ogg" id="2_381bj"]
-[ext_resource type="Script" uid="uid://c1ob218vc3vmt" path="res://paper.gd" id="2_nobtx"]
+[ext_resource type="Script" uid="uid://c1ob218vc3vmt" path="res://script/paper.gd" id="2_nobtx"]
 
 [sub_resource type="Animation" id="Animation_pnjay"]
 length = 0.001
@@ -82,7 +82,7 @@ _data = {
 }
 
 [node name="Paper" type="Sprite3D"]
-transform = Transform3D(-2.6226832e-09, -0.056381557, 0.020521222, 0, 0.020521222, 0.056381557, -0.06, 2.4645161e-09, -8.9701113e-10, 1.0681977, -0.043147087, 0)
+transform = Transform3D(-2.6226832e-09, -0.05638156, 0.020521224, 0, 0.020521224, 0.05638156, -0.06, 2.4645164e-09, -8.970112e-10, 1.0681977, -0.043147087, 0)
 script = ExtResource("2_nobtx")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
