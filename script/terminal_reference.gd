@@ -4,16 +4,23 @@ extends Control
 @onready var audio_keyboard_sfx: AudioStreamPlayer3D = get_node("/root/Node3D/KeyboardSFX")
 @onready var printer: CSGBox3D = get_node("/root/Node3D/Printer")
 
-var current_context: Context
 var command_history = []
 var command_history_index = 0
 
+var current_context: Context
+var context_home: Context
+var context_drive_storage: Context
+
 const SCROLL_DISTANCE = 75
+
+var drives := []
+var drive_connected = false
 
 # https://gist.github.com/awhiskin/b1d752e57f75319029c222bb4c14709a
 class Context:
-	var user_name := "UUSER"
+	var user_name := "USER"
 	var device_name := "MCHN-89"
+	var drive_name := ""
 	var working_directory: Folder
 	var root_directory: Folder
 	var date := "2025-07-30"
@@ -69,7 +76,7 @@ var commands = {
 	"ls": {
 		"description": "   List files and directories in the current directory",
 		"func": "_cmd_ls",
-		"alias": ["list"]
+		"alias": ["list", "dir"]
 	},
 	"cd": {
 		"description": "Change the working directory to the target directory",
@@ -99,8 +106,65 @@ var commands = {
 		"description": "Print the input image file",
 		"func": "_cmd_print",
 		"args": ["<file>"]
-	}
+	},
+	"drives": {
+		"description": "\n     View a list of shared drives to connect to.",
+		"func": "_cmd_drives",
+		"args": ["<connect disconnect list>", "[drive_name]"],
+		"alias": ["shares", "drive", "drives", "drv", "shr", "//"]
+	},
+	
 }
+
+
+func _cmd_drives(_args: String) -> bool:
+	var _args_split = _args.strip_edges().to_lower().split(" ")
+	# feat. janky handling for when no args provided
+	if _args_split.size() > 0 and _args_split[0] != "":
+		var operation = _args_split[0]
+		if operation == "connect" or operation == "+":
+			# Check if drive name given
+			if _args_split.size() > 1:
+				var drive_name = _args_split[1]
+				# Check if drive exists, else fail
+				for drive in drives:
+					if drive.drive_name.to_lower() == drive_name:
+						_new_log("Connected to drive " + drive_name.to_upper() + " successfully")
+						current_context = drive
+						drive_connected = true
+						update_visual_context()
+						return true
+				_error("DRIVE_NOT_FOUND")
+				return false
+			else: 
+				_error("NOT_ENOUGH_ARGS")
+				return false
+		elif operation == "disconnect" or operation == "-":
+			if drive_connected == false:
+				_error("DRIVE_NOT_CONNECTED")
+				return false
+			drive_connected = false
+			_new_log("Disconnected from drive " + current_context.drive_name + " successfully")
+			current_context = context_home
+			update_visual_context()
+			return true
+		elif operation == "list" or operation == "?":
+			_drives_list()
+			return true
+		else:
+			_error("UNRECOGNISED_OPERATION")
+			return false
+	# If no operation given, print drives
+	_drives_list()
+	return true
+
+func _drives_list() -> void:
+	var drive_string = ""
+	for drive in drives:
+		drive_string += drive.drive_name + ", "
+	drive_string = drive_string.substr(0, drive_string.length() - 2)
+	_new_log(drive_string)
+
 
 func _cmd_print(_args: String) -> bool:
 	var input_image = _args.split(" ")[0]
@@ -195,7 +259,7 @@ func _cmd_help(_args: String) -> void:
 			if commands[command].has("alias"):
 				aliases = " (" + ", ".join(commands[command].alias) + ")"
 			if commands[command].has("args"):
-				args = "".join(commands[command].args)
+				args = " ".join(commands[command].args)
 			_new_log(command + " " + args + "     " + commands[command].description + aliases)
 
 
@@ -243,7 +307,9 @@ func _error(_error_type: String) -> void:
 		"INTERNAL_ERROR": "An internal error has occured.",
 		"NOT_AN_IMAGE": "Given file not an image (JPG, PNG, BMP).",
 		"NOT_A_TEXT_FILE": "Given file not a text file (TXT, DOC, MD, PDF).",
-		"PRINT_IN_PROGRESS": "A print operation is already in progress."
+		"PRINT_IN_PROGRESS": "A print operation is already in progress.",
+		"DRIVE_NOT_FOUND": "Cannot find the drive specified.",
+		"DRIVE_NOT_CONNECTED": "Not currently connected to any drive.",
 	}
 	if error_types.has(_error_type): _new_log(error_types[_error_type])
 	else: _new_log(error_types[_error_type])
@@ -272,7 +338,10 @@ func _on_text_edit_gui_input(event: InputEvent) -> void:
 		var command = input_sanitised.split(" ")[0]
 		
 		var first_space_index = input_sanitised.find(" ")
-		var args = input_sanitised.substr(first_space_index + 1)
+		var args
+		if first_space_index == -1:
+			args = ""
+		else: args = input_sanitised.substr(first_space_index + 1)
 		
 		_new_log(terminal_pretext + " " + input_sanitised)
 		
@@ -326,32 +395,25 @@ func _on_text_edit_gui_input(event: InputEvent) -> void:
 	
 
 func _ready() -> void:
+	setup_contexts()
+	update_visual_context()
+
+func setup_contexts() -> void:
 	# Init context and directories
-	current_context = Context.new()
-	current_context.root_directory = Folder.new("", null)
-	current_context.root_directory.subdirectories = [
-		Folder.new("Desktop", current_context.root_directory),
-		Folder.new("Documents", current_context.root_directory),
+	context_home = Context.new()
+	context_home.root_directory = Folder.new("", null)
+	context_home.root_directory.subdirectories = [
+		Folder.new("Desktop", context_home.root_directory),
+		Folder.new("Documents", context_home.root_directory),
 	]
-	current_context.working_directory = current_context.root_directory
+	context_home.working_directory = context_home.root_directory
 	
-	current_context.root_directory.child_files = [
-		Document.new("commands.txt", current_context.root_directory),
-		Document.new("sheet.png", current_context.root_directory),
-		Document.new("sheet2.png", current_context.root_directory),
+	context_home.root_directory.child_files = [
+		Document.new("commands.txt", context_home.root_directory),
+		Document.new("sheet.png", context_home.root_directory),
+		Document.new("sheet2.png", context_home.root_directory),
 	]
-	#current_context.root_directory.child_files[0].set_content(
-		#"┌────────┬──────────────────────────────────────┐\n" +
-		#"│ Letter   │ Keyword                                       │\n" +
-		#"├────────┼──────────────────────────────────────┤\n" +
-		#"│ A        │ MOUNTAIN                                      │\n" +
-		#"├────────┼──────────────────────────────────────┤\n" +
-		#"│ B        │ WALRUS                                        │\n" +
-		#"├────────┼──────────────────────────────────────┤\n" +
-		#"│ C        │ WALRUS                                        │\n" +
-		#"└────────┴──────────────────────────────────────┘"
-	#)
-	current_context.root_directory.child_files[0].set_content(
+	context_home.root_directory.child_files[0].set_content(
 			'"A236D": "MOUNTAIN"\n' +
 			'"B38HE": "RIVER"\n' +
 			'"C48E2": "MOSQUITO"\n' +
@@ -359,12 +421,32 @@ func _ready() -> void:
 			'"E01D3": "NETWORK"\n' +
 			'"F10BA": "TERMINAL"'
 	)
-	current_context.root_directory.child_files[1].set_content("res://sprite/sheet.png")
-	current_context.root_directory.child_files[2].set_content("res://sprite/LEVELDATASHEETREPORT.png")
-	current_context.root_directory.subdirectories[0].child_files = [
-		Document.new("message.txt", current_context.root_directory.subdirectories[0])
+	context_home.root_directory.child_files[1].set_content("res://sprite/sheet.png")
+	context_home.root_directory.child_files[2].set_content("res://sprite/LEVELDATASHEETREPORT.png")
+	context_home.root_directory.subdirectories[0].child_files = [
+		Document.new("message.txt", context_home.root_directory.subdirectories[0])
 	]
-	update_visual_context()
+	current_context = context_home
+	
+	# DRIVE CONTEXT SETUP
+	context_drive_storage = Context.new()
+	context_drive_storage.drive_name = "STORAGE"
+	context_drive_storage.root_directory = Folder.new("", null)
+	context_drive_storage.root_directory.subdirectories = [
+		Folder.new("docs", context_drive_storage.root_directory),
+	]
+	context_drive_storage.working_directory = context_drive_storage.root_directory
+
+	context_drive_storage.root_directory.child_files = [
+		Document.new("storage.txt", context_drive_storage.root_directory)
+	]
+	context_drive_storage.root_directory.child_files[0].set_content(
+		"STORAGE drive document - PRIVATE"
+	)
+	drives.append(context_drive_storage)
 	
 func update_visual_context() -> void:
-	%TerminalInput/Label.text = current_context.user_name + "@" + current_context.device_name + ":/" + current_context.working_directory.to_string() + ">"
+	var drive_name = ""
+	if current_context.drive_name != "":
+		drive_name = ":" + current_context.drive_name
+	%TerminalInput/Label.text = current_context.user_name + "@" + current_context.device_name + drive_name + ":/" + current_context.working_directory.to_string() + ">"

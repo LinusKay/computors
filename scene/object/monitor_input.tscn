@@ -99,7 +99,7 @@ custom_minimum_size = Vector2(800, 0)
 layout_mode = 2
 text = "GombuComp [Version 5.3.05943.234]
 (c) Gombudor Corporation. All rights reserved."
-autowrap_mode = 1
+autowrap_mode = 3
 
 [node name="TerminalInput" type="HBoxContainer" parent="Screen/SubViewportContainer/SubViewport/Control" index="3"]
 layout_mode = 1
