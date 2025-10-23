@@ -369,6 +369,16 @@ func _cmd_print(_args: String) -> bool:
 	_error("FILE_NOT_FOUND")
 	return false
 
+# Build out functions for use in any command where finding a file/folder is needed
+# eg: cat <file>, ls <folder>, audio load <file>, etc.
+func _find_folder_from_path(path: String) -> bool:
+	return true
+	
+func _find_file_from_path(path: String) -> bool:
+	return true
+
+
+
 func _cmd_ls(_args: String) -> bool:
 	var input_file = _args.split(" ")[0]
 	if input_file.ends_with("/"): input_file.left(input_file.length() - 1)
