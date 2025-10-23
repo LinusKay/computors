@@ -1,0 +1,124 @@
+[gd_scene load_steps=13 format=3 uid="uid://b2qq207r3odpy"]
+
+[ext_resource type="FontFile" uid="uid://c44f6qlxjph8p" path="res://font/vt323-latin-400-normal.ttf" id="1_xm6xr"]
+[ext_resource type="Script" uid="uid://3pokr7gc42ly" path="res://script/menu_start.gd" id="2_i52sj"]
+[ext_resource type="Shader" uid="uid://c87o3styittpr" path="res://shader/text_wave.gdshader" id="3_i52sj"]
+[ext_resource type="Script" uid="uid://c7226j0ldeppy" path="res://script/menu_label.gd" id="4_x8iev"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3mf4l"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_4tbk0"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_irwit"]
+
+[sub_resource type="Theme" id="Theme_sh1uh"]
+default_font = ExtResource("1_xm6xr")
+default_font_size = 40
+Label/colors/font_color = Color(1, 1, 1, 1)
+TextEdit/styles/focus = SubResource("StyleBoxEmpty_3mf4l")
+TextEdit/styles/normal = SubResource("StyleBoxEmpty_4tbk0")
+TextEdit/styles/read_only = SubResource("StyleBoxEmpty_irwit")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_x8iev"]
+shader = ExtResource("3_i52sj")
+shader_parameter/height = 0.0
+shader_parameter/frequency = 20.0
+shader_parameter/speed = 3.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_min5j"]
+shader = ExtResource("3_i52sj")
+shader_parameter/height = 0.0
+shader_parameter/frequency = 20.0
+shader_parameter/speed = 3.0
+
+[sub_resource type="LabelSettings" id="LabelSettings_r5swl"]
+font_size = 25
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xm6xr"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.101960786, 0.101960786, 0.101960786, 0)
+border_color = Color(0, 0, 0, 0)
+corner_detail = 5
+
+[node name="MenuStart" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_sh1uh")
+script = ExtResource("2_i52sj")
+skip_menu = true
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Type your command"
+horizontal_alignment = 1
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="LabelStart" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer2"]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_x8iev")
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.5019608)
+text = "START"
+horizontal_alignment = 1
+script = ExtResource("4_x8iev")
+
+[node name="VSeparator" type="VSeparator" parent="MarginContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+
+[node name="LabelQuit" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer2"]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_min5j")
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.5019608)
+text = "QUIT"
+horizontal_alignment = 1
+script = ExtResource("4_x8iev")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+visible = false
+layout_mode = 2
+text = ">"
+label_settings = SubResource("LabelSettings_r5swl")
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 25
+theme_override_styles/normal = SubResource("StyleBoxFlat_xm6xr")
+
+[node name="LabelEnter" type="Label" parent="MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "Press ENTER"
+horizontal_alignment = 1
+
+[connection signal="text_changed" from="MarginContainer/VBoxContainer/HBoxContainer/LineEdit" to="." method="_on_line_edit_text_changed"]
+[connection signal="text_submitted" from="MarginContainer/VBoxContainer/HBoxContainer/LineEdit" to="." method="_on_line_edit_text_submitted"]

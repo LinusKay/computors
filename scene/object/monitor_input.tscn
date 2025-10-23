@@ -1,0 +1,64 @@
+[gd_scene load_steps=10 format=3 uid="uid://l3l8std3wcxc"]
+
+[ext_resource type="PackedScene" uid="uid://ct07h20p64f4m" path="res://model/old_computer.fbx" id="1_0ac0h"]
+[ext_resource type="Script" uid="uid://byskaii40tg42" path="res://script/monitor_input.gd" id="2_b4eie"]
+[ext_resource type="Shader" uid="uid://dpcocmg7b2mm1" path="res://shader/holo.gdshader" id="3_6wsn7"]
+[ext_resource type="PackedScene" uid="uid://ulkit5wypody" path="res://scene/Interface/interface_input_command.tscn" id="4_b4eie"]
+[ext_resource type="PackedScene" uid="uid://eagvavbyqrv6" path="res://scene/Interface/interface_adjust_signal.tscn" id="5_gsa0n"]
+[ext_resource type="AudioStream" uid="uid://c17x2345flopj" path="res://audio/sfx/ambient/computer-humming-236384.ogg" id="6_ejpe2"]
+[ext_resource type="AudioStream" uid="uid://4b0d1vrrutfs" path="res://audio/sfx/typesound.ogg" id="8_u33h0"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_088vp"]
+viewport_path = NodePath("Screen/SubViewportContainer/SubViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tqvw2"]
+render_priority = 0
+shader = ExtResource("3_6wsn7")
+shader_parameter/normal_depth = 0.25
+shader_parameter/color_compression = 6.0
+
+[node name="monitor_input" instance=ExtResource("1_0ac0h")]
+script = ExtResource("2_b4eie")
+
+[node name="desk" parent="." index="0"]
+layers = 2
+
+[node name="focus_origin" type="Node3D" parent="." index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.01867, -0.166852)
+
+[node name="Screen" type="Sprite3D" parent="." index="2"]
+transform = Transform3D(-1.09278e-08, 0, 0.25, 0, 0.25, 0, -0.25, 0, -1.09278e-08, 0.729437, 1.01641, -0.16971)
+transparency = 0.5
+texture = SubResource("ViewportTexture_088vp")
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="Screen" index="0"]
+material = SubResource("ShaderMaterial_tqvw2")
+offset_left = -684.0
+offset_top = 40.0
+offset_right = -34.0
+offset_bottom = 525.0
+
+[node name="SubViewport" type="SubViewport" parent="Screen/SubViewportContainer" index="0"]
+unique_name_in_owner = true
+handle_input_locally = false
+size = Vector2i(650, 485)
+render_target_update_mode = 4
+
+[node name="InterfaceInputCommand" parent="Screen/SubViewportContainer/SubViewport" index="0" instance=ExtResource("4_b4eie")]
+unique_name_in_owner = true
+
+[node name="InterfaceAdjustSignal" parent="Screen/SubViewportContainer/SubViewport" index="1" instance=ExtResource("5_gsa0n")]
+
+[node name="AudioComputerHum" type="AudioStreamPlayer3D" parent="." index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.91215456, 0.9014982, -2.1472933)
+stream = ExtResource("6_ejpe2")
+volume_db = -10.0
+autoplay = true
+bus = &"sfx"
+
+[node name="AudioTypeSounds" type="AudioStreamPlayer3D" parent="." index="4"]
+unique_name_in_owner = true
+stream = ExtResource("8_u33h0")
+volume_db = -10.0
+
+[connection signal="command_input" from="Screen/SubViewportContainer/SubViewport/InterfaceInputCommand" to="." method="_on_interface_input_command_command_input"]

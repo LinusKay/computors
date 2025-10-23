@@ -1,0 +1,108 @@
+[gd_scene load_steps=7 format=3 uid="uid://cdw7kddflp0yf"]
+
+[ext_resource type="AudioStream" uid="uid://cmi6olpcuvydk" path="res://audio/sfx/printer/print_start.ogg" id="2_381bj"]
+[ext_resource type="Script" uid="uid://c1ob218vc3vmt" path="res://script/paper.gd" id="2_nobtx"]
+
+[sub_resource type="Animation" id="Animation_pnjay"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(1.0681977, -0.043147087, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(-1.2217302, 1.5707964, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_f78kt"]
+resource_name = "paper_fall"
+length = 8.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.43333334, 8),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(1.0681977, -0.043147087, 0), Vector3(1.5, -0.4, 0), Vector3(4.0094924, -3.9366527, -0.17260468)]
+}
+
+[sub_resource type="Animation" id="Animation_70ksi"]
+resource_name = "paper_print"
+length = 4.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 3.2999997, 3.9666667),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(-0.2, 0.1, 0), Vector3(1.068, 0.1, 0), Vector3(1.068, -0.1, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 3.3666663, 3.9666667),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(-1.5707964, 1.5707964, 0), Vector3(-1.5707964, 1.5707964, 0), Vector3(-1.2217302, 1.5707964, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ot17s"]
+_data = {
+&"RESET": SubResource("Animation_pnjay"),
+&"paper_fall": SubResource("Animation_f78kt"),
+&"paper_print": SubResource("Animation_70ksi")
+}
+
+[node name="Paper" type="Sprite3D"]
+transform = Transform3D(-2.6226832e-09, -0.05638156, 0.020521224, 0, 0.020521224, 0.05638156, -0.06, 2.4645164e-09, -8.970112e-10, 1.0681977, -0.043147087, 0)
+script = ExtResource("2_nobtx")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_ot17s")
+}
+autoplay = "paper_fall"
+
+[node name="PauseDelayTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="PauseTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="PrintAudio" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(16.666668, -1.1368684e-13, -2.842171e-14, 0, 16.666664, -9.536743e-07, -2.842171e-14, 4.7683716e-07, 16.666664, 7.787984e-07, 16.742342, -6.093718)
+stream = ExtResource("2_381bj")
+
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_animation_player_animation_finished"]
+[connection signal="animation_started" from="AnimationPlayer" to="." method="_on_animation_player_animation_started"]
+[connection signal="timeout" from="PauseDelayTimer" to="." method="_on_pause_delay_timer_timeout"]
+[connection signal="timeout" from="PauseTimer" to="." method="_on_pause_timer_timeout"]
+[connection signal="finished" from="PrintAudio" to="." method="_on_print_audio_finished"]

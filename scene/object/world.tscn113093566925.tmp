@@ -1,0 +1,365 @@
+[gd_scene load_steps=46 format=3 uid="uid://cdlbuouhdddtl"]
+
+[ext_resource type="Script" uid="uid://dgytay7sgen8k" path="res://script/event_controller.gd" id="1_1ebx5"]
+[ext_resource type="AudioStream" uid="uid://c05e5cyjxe1or" path="res://audio/sfx/woosh.ogg" id="3_qrdad"]
+[ext_resource type="PackedScene" uid="uid://bl3l8std3wcxc" path="res://scene/object/monitor_reference.tscn" id="3_tqooo"]
+[ext_resource type="Script" uid="uid://b3suwn2fq5iq2" path="res://script/camera.gd" id="4_4gbmn"]
+[ext_resource type="PackedScene" uid="uid://l3l8std3wcxc" path="res://scene/object/monitor_input.tscn" id="4_kwmd8"]
+[ext_resource type="PackedScene" uid="uid://rsb4ts8uca4q" path="res://scene/object/desk.tscn" id="5_748lb"]
+[ext_resource type="PackedScene" uid="uid://dmesnq886wffc" path="res://scene/object/monitor_receive.tscn" id="5_kwmd8"]
+[ext_resource type="Texture2D" uid="uid://cr8c513j6ht4o" path="res://sprite/beige_wall_002_diff_4k_1024.jpg" id="5_n25k3"]
+[ext_resource type="Texture2D" uid="uid://cxo4hktnag4a6" path="res://sprite/stickynote.png" id="5_q1wis"]
+[ext_resource type="Texture2D" uid="uid://drnsclleylmw6" path="res://sprite/Sabby_Jam25-01.png" id="5_wo72k"]
+[ext_resource type="Script" uid="uid://dix5328liuuij" path="res://script/monitor_receive.gd" id="6_hlyc2"]
+[ext_resource type="PackedScene" uid="uid://cuo0ptgeuqwut" path="res://scene/object/printer.tscn" id="6_v48e1"]
+[ext_resource type="Texture2D" uid="uid://0ig0aupfeixp" path="res://sprite/goldring.jpg" id="7_godbb"]
+[ext_resource type="AudioStream" uid="uid://bnns1brgbb6ux" path="res://audio/sfx/typing/keypress-001.ogg" id="8_55vyt"]
+[ext_resource type="AudioStream" uid="uid://c1jci8qgy5e3h" path="res://audio/sfx/typing/keypress-002.ogg" id="9_lxju4"]
+[ext_resource type="AudioStream" uid="uid://cbl2iteskcmgk" path="res://audio/sfx/typing/keypress-003.ogg" id="10_2ikf2"]
+[ext_resource type="AudioStream" uid="uid://yv1g4c3jc683" path="res://audio/sfx/typing/keypress-004.ogg" id="11_1ebx5"]
+[ext_resource type="AudioStream" uid="uid://bay7eaf8bcme" path="res://audio/sfx/typing/keypress-005.ogg" id="12_kwmd8"]
+[ext_resource type="Script" uid="uid://ojtwmd1q04p4" path="res://script/keyboard_sfx.gd" id="13_v48e1"]
+[ext_resource type="AudioStream" uid="uid://ccj3uq72ulslq" path="res://audio/sfx/ambient/ambience-roomtone-33-404108.ogg" id="14_lxju4"]
+[ext_resource type="PackedScene" uid="uid://cl2usnc72xk22" path="res://scene/object/drinkingbird.tscn" id="20_xx0le"]
+[ext_resource type="PackedScene" uid="uid://cf5hodrf1165c" path="res://model/mug.glb" id="21_8envh"]
+[ext_resource type="AudioStream" uid="uid://cjqjfaxm3yccn" path="res://audio/music/terminal.ogg" id="24_qrdad"]
+[ext_resource type="Script" uid="uid://cuardi3gnr8qy" path="res://script/speaker.gd" id="24_yh23u"]
+[ext_resource type="PackedScene" uid="uid://b2qq207r3odpy" path="res://scene/Interface/menu_start.tscn" id="25_qrdad"]
+[ext_resource type="Script" uid="uid://bg2ltjg7un5hx" path="res://script/fade_rect.gd" id="25_r5swl"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_jygjw"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_isfvt"]
+sky_material = SubResource("ProceduralSkyMaterial_jygjw")
+
+[sub_resource type="Environment" id="Environment_wdis0"]
+background_mode = 2
+sky = SubResource("Sky_isfvt")
+ambient_light_sky_contribution = 0.09
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_q1wis"]
+random_pitch = 1.3
+streams_count = 5
+stream_0/stream = ExtResource("8_55vyt")
+stream_1/stream = ExtResource("9_lxju4")
+stream_2/stream = ExtResource("10_2ikf2")
+stream_3/stream = ExtResource("11_1ebx5")
+stream_4/stream = ExtResource("12_kwmd8")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rv6fb"]
+albedo_texture = ExtResource("5_n25k3")
+uv1_scale = Vector3(1, 5, 5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_i1qa4"]
+albedo_texture = ExtResource("5_n25k3")
+uv1_scale = Vector3(1, 5, 5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5vh7r"]
+albedo_texture = ExtResource("5_n25k3")
+uv1_scale = Vector3(1, 5, 5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_eyk6f"]
+albedo_texture = ExtResource("5_n25k3")
+uv1_scale = Vector3(1, 5, 5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vc3c8"]
+albedo_texture = ExtResource("5_n25k3")
+uv1_scale = Vector3(1, 5, 5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rm151"]
+albedo_texture = ExtResource("5_n25k3")
+uv1_scale = Vector3(1, 5, 5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fe7q8"]
+albedo_texture = ExtResource("5_n25k3")
+uv1_scale = Vector3(1, 5, 5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_brwg7"]
+albedo_texture = ExtResource("5_n25k3")
+uv1_scale = Vector3(1, 5, 5)
+
+[sub_resource type="Animation" id="Animation_2ikf2"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0.56384605, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_lxju4"]
+resource_name = "lighthouse"
+length = 10.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1.4666667, 9.966666),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 3.261384, 0), Vector3(0, 6.2831855, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_1ebx5"]
+_data = {
+&"RESET": SubResource("Animation_2ikf2"),
+&"lighthouse": SubResource("Animation_lxju4")
+}
+
+[sub_resource type="Animation" id="Animation_81xs5"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(0, 0, 0, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_sh1uh"]
+resource_name = "fade_in"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(0, 0, 0, 1), Color(0, 0, 0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_r5swl"]
+resource_name = "fade_out"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(0, 0, 0, 1), Color(0, 0, 0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_u54tv"]
+_data = {
+&"RESET": SubResource("Animation_81xs5"),
+&"fade_in": SubResource("Animation_sh1uh"),
+&"fade_out": SubResource("Animation_r5swl")
+}
+
+[node name="Node3D" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_wdis0")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
+light_color = Color(0.377919, 0.377919, 0.377919, 1)
+shadow_enabled = true
+
+[node name="EventController" type="Node3D" parent="." node_paths=PackedStringArray("camera", "monitor_reference", "monitor_input", "monitor_receive")]
+script = ExtResource("1_1ebx5")
+camera = NodePath("../Camera3D")
+monitor_reference = NodePath("../MonitorReference")
+monitor_input = NodePath("../MonitorInput")
+monitor_receive = NodePath("../MonitorReceive")
+
+[node name="Camera3D" type="Camera3D" parent="." node_paths=PackedStringArray("focus_array")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1.0000001, 0, -1, 0, -4.371139e-08, 5, 4.63398, 4)
+script = ExtResource("4_4gbmn")
+focus_array = [NodePath("../MonitorReference"), NodePath("../MonitorInput"), NodePath("../MonitorReceive"), NodePath("../Printer")]
+focus_index = 1
+
+[node name="AudioWoosh" type="AudioStreamPlayer" parent="Camera3D"]
+stream = ExtResource("3_qrdad")
+volume_db = -20.0
+mix_target = 1
+bus = &"sfx"
+
+[node name="MonitorReference" parent="." node_paths=PackedStringArray("event_controller", "audio_keyboard_sfx") instance=ExtResource("3_tqooo")]
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 2.68058, 3.54881, 6.6874)
+event_controller = NodePath("../EventController")
+focus_fov = 33.0
+origin_offset = Vector3(0, 0, 0)
+audio_keyboard_sfx = NodePath("../KeyboardSFX")
+
+[node name="MonitorInput" parent="." node_paths=PackedStringArray("event_controller", "audio_keyboard_sfx") instance=ExtResource("4_kwmd8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6428585, 3.592045, 4.248417)
+event_controller = NodePath("../EventController")
+focus_fov = 35.0
+audio_keyboard_sfx = NodePath("../KeyboardSFX")
+
+[node name="MonitorReceive" parent="." node_paths=PackedStringArray("event_controller", "audio_keyboard_sfx") instance=ExtResource("5_kwmd8")]
+transform = Transform3D(0.430413, 0.054711074, -0.24849886, -0.0671498, 0.49541804, -0.00723266, 0.24542998, 0.03959934, 0.43381605, 2.45339, 5.68265, 2.15138)
+script = ExtResource("6_hlyc2")
+event_controller = NodePath("../EventController")
+focus_fov = 35.0
+audio_keyboard_sfx = NodePath("../KeyboardSFX")
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+transform = Transform3D(0.21604162, 3.178773e-10, 5.35193e-12, -3.1787728e-10, 0.2159192, 0.0072721853, 5.35193e-12, -0.0072721853, 0.2159192, 2.433542, 4.38782, 2.7317486)
+texture = ExtResource("5_q1wis")
+
+[node name="Printer" parent="." instance=ExtResource("6_v48e1")]
+transform = Transform3D(0.73896116, 0, -0.673748, 0, 1, 0, 0.673748, 0, 0.73896116, 3.346477, 3.7092776, 2.112733)
+
+[node name="Speaker" type="CSGBox3D" parent="."]
+transform = Transform3D(0.90853006, 0, 0.4178195, 0, 1, 0, -0.4178195, 0, 0.90853006, 3.42874, 4.8253803, 1.0104477)
+size = Vector3(0.6542969, 1, 0.7104492)
+script = ExtResource("24_yh23u")
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Speaker"]
+volume_db = -10.0
+bus = &"speaker"
+
+[node name="Label3D" type="Label3D" parent="Speaker"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.033249617, 0, 0.37643862)
+text = "Speaker"
+
+[node name="KeyboardSFX" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.0667236, 3.6976953, 4.1002426)
+stream = SubResource("AudioStreamRandomizer_q1wis")
+volume_db = -20.0
+unit_size = 5.0
+bus = &"sfx"
+script = ExtResource("13_v48e1")
+
+[node name="Desk" parent="." instance=ExtResource("5_748lb")]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 6.76714, 0.00598216, 4.56392)
+
+[node name="SpotLight3D" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 3.77097, 9, 4.02278)
+light_energy = 5.88
+shadow_enabled = true
+spot_range = 14.8257
+
+[node name="CSGBox3D" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0067009926, 4.97069, 4.0091734)
+size = Vector3(1, 10.035, 21.2443)
+material = SubResource("StandardMaterial3D_rv6fb")
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="CSGBox3D"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 5.129, 0, -10)
+size = Vector3(1, 10.035, 10.9863)
+material = SubResource("StandardMaterial3D_i1qa4")
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="CSGBox3D"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 10.129, 0, -10)
+size = Vector3(1, 10.035, 10.9863)
+material = SubResource("StandardMaterial3D_5vh7r")
+
+[node name="CSGBox3D4" type="CSGBox3D" parent="CSGBox3D"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 13.1359, 0, -5)
+size = Vector3(1, 10.035, 7)
+material = SubResource("StandardMaterial3D_eyk6f")
+
+[node name="CSGBox3D5" type="CSGBox3D" parent="CSGBox3D"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 16.1359, 0, 2.5)
+size = Vector3(1, 10.035, 16)
+material = SubResource("StandardMaterial3D_vc3c8")
+
+[node name="CSGBox3D6" type="CSGBox3D" parent="CSGBox3D"]
+transform = Transform3D(1.31134e-07, 0, 1, 0, 1, 0, -1, 0, 1.31134e-07, 8.13586, 0, 9.5)
+size = Vector3(1, 10.035, 16)
+material = SubResource("StandardMaterial3D_rm151")
+
+[node name="CSGBox3D7" type="CSGBox3D" parent="CSGBox3D"]
+transform = Transform3D(1.31134e-07, 0, 1, -1, -4.37114e-08, 1.31134e-07, 4.37114e-08, -1, -5.73206e-15, 8.19096, -5.01414, 0.0110664)
+size = Vector3(1, 21, 16)
+material = SubResource("StandardMaterial3D_fe7q8")
+
+[node name="CSGBox3D8" type="CSGBox3D" parent="CSGBox3D"]
+transform = Transform3D(1.31134e-07, 0, 1, -1, -4.37114e-08, 1.31134e-07, 4.37114e-08, -1, -5.73206e-15, 8.19096, 4.98586, 0.0110664)
+size = Vector3(1, 21, 16)
+material = SubResource("StandardMaterial3D_brwg7")
+
+[node name="Decal" type="Decal" parent="."]
+transform = Transform3D(-4.37114e-08, 1, 0, 0.059411, 2.59694e-09, -0.998234, -0.998234, -4.36342e-08, -0.059411, 0.122803, 6.25519, 6.32515)
+size = Vector3(2.46924, 2.24561, 3.15723)
+texture_albedo = ExtResource("5_wo72k")
+upper_fade = 0.00331457
+lower_fade = 0.00844922
+
+[node name="Decal2" type="Decal" parent="."]
+transform = Transform3D(-4.37114e-08, 1, 0, -0.0210994, -9.22285e-10, -0.999777, -0.999777, -4.37017e-08, 0.0210994, -0.11908, 5.34015, 4.41776)
+size = Vector3(1.24524, 1.76184, 1.02631)
+texture_albedo = ExtResource("7_godbb")
+upper_fade = 0.000606601
+lower_fade = 0.00538452
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("14_lxju4")
+volume_db = -20.0
+autoplay = true
+bus = &"sfx"
+
+[node name="SpotLight3D2" type="SpotLight3D" parent="."]
+transform = Transform3D(0.845206, 0, 0.5344409, 0, 1, 0, -0.53444093, 0, 0.8452059, 12, 5, 0)
+visible = false
+spot_range = 70.7
+spot_attenuation = 0.18
+spot_angle = 30.04
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="SpotLight3D2"]
+libraries = {
+&"": SubResource("AnimationLibrary_1ebx5")
+}
+autoplay = "lighthouse"
+
+[node name="drinkingbird" parent="." instance=ExtResource("20_xx0le")]
+transform = Transform3D(-4.330127, 0, -2.5000002, 0, 5, 0, 2.5000002, 0, -4.330127, 3.1084962, 4.0198703, 2.2878602)
+
+[node name="mug" parent="." instance=ExtResource("21_8envh")]
+transform = Transform3D(-0.1462527, 0, -0.16786543, 0, 0.2226402, 0, 0.16786543, 0, -0.1462527, 3.5526023, 3.8492484, 1.9235854)
+
+[node name="AudioMusicNonDiagetic" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("24_qrdad")
+bus = &"music"
+
+[node name="FadeRect" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+script = ExtResource("25_r5swl")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="FadeRect"]
+libraries = {
+&"": SubResource("AnimationLibrary_u54tv")
+}
+
+[node name="MenuStart" parent="." node_paths=PackedStringArray("audio_keyboard_sfx") instance=ExtResource("25_qrdad")]
+audio_keyboard_sfx = NodePath("../KeyboardSFX")
+
+[connection signal="pass_command_eventcontroller" from="MonitorInput" to="EventController" method="_on_monitor_input_pass_command_eventcontroller"]
+[connection signal="finished" from="Speaker/AudioStreamPlayer3D" to="Speaker" method="_on_audio_stream_player_3d_finished"]
+[connection signal="animation_finished" from="FadeRect/AnimationPlayer" to="FadeRect" method="_on_animation_player_animation_finished"]
