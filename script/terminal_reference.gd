@@ -371,45 +371,64 @@ func _cmd_print(_args: String) -> bool:
 
 # Build out functions for use in any command where finding a file/folder is needed
 # eg: cat <file>, ls <folder>, audio load <file>, etc.
-func _find_folder_from_path(path: String) -> bool:
-	return true
-	
-func _find_file_from_path(path: String) -> bool:
-	return true
-
-
-
-func _cmd_ls(_args: String) -> bool:
-	var input_file = _args.split(" ")[0]
-	if input_file.ends_with("/"): input_file.left(input_file.length() - 1)
-	var args_split_slash = input_file.split("/")
-	
+func _find_folder_from_path(path: String) -> Folder:
+	print("finding folder from path")
+	print(path)
+	var path_split = path.split("/")
 	var working_directory_temp = current_context.working_directory
-	if args_split_slash.size() > 0 and args_split_slash[0] != "":
+	if path_split.size() > 0 and path_split[0] != "":
 		var dir_match = false
-		for step in args_split_slash.size():
+		for step in path_split.size():
 			var directories = working_directory_temp.subdirectories
-			if args_split_slash[step] != "":
-				if args_split_slash[step] == "..":
+			if path_split[step] != "":
+				if path_split[step] == "..":
 					if working_directory_temp.parent_directory != null:
 						working_directory_temp = working_directory_temp.parent_directory
 					dir_match = true
-				elif args_split_slash[step] == ".":
+				elif path_split[step] == ".":
 					dir_match = true
 				else:
 					for directory in directories:
-						if directory.to_string() == args_split_slash[step].to_lower():
+						if directory.to_string() == path_split[step].to_lower():
 							working_directory_temp = directory
 							dir_match = true
 							break
 						else:
 							dir_match = false
 		if !dir_match:
-			_error("FOLDER_NOT_FOUND")
-			return false
+			return null
+	return working_directory_temp
+	
+func _find_file_from_path(path: String) -> Document:
+	var file_directory = current_context.working_directory
+	var path_split = path.split("/")
+	var path_file = path_split[-1]
+	if path_split.size() > 1:
+		path_split.remove_at(path_split.size() - 1)
+		var path_directory = "/".join(path_split)
+		var file_folder = _find_folder_from_path(path_directory)
+		if file_folder != null: file_directory = file_folder
+	print("path_file ", path_file)
+	print("file_directory ", file_directory)
+	var files = file_directory.child_files
+	for file in files:
+		print("file list ", file.to_string())
+		print("path_file ", path_file)
+		if file.to_string().to_lower() == path_file:
+			return file
+	return null
+
+
+
+func _cmd_ls(_args: String) -> bool:
+	var ls_directory = _find_folder_from_path(_args)
+	
+	if ls_directory == null:
+		_error("FOLDER_NOT_FOUND")
+		return false
 		
-	var folders: Array[Folder] = working_directory_temp.subdirectories
-	var files: Array[Document] = working_directory_temp.child_files
+	var folders: Array[Folder] = ls_directory.subdirectories
+	var files: Array[Document] = ls_directory.child_files
 	for folder in folders:
 		_new_log(folder._to_string() + "/")
 	for file in files:
@@ -418,59 +437,41 @@ func _cmd_ls(_args: String) -> bool:
 
 func _cmd_cd(_args: String) -> bool:
 	var input_folder = _args.split(" ")[0]
-	if input_folder.ends_with("/"): input_folder.left(input_folder.length() - 1)
-	
 	if input_folder.length() == 0: 
 		_error("NOT_ENOUGH_ARGS")
 		return false 
 		
-	var args_split_slash = input_folder.split("/")
-	var working_directory_temp = current_context.working_directory
-	var dir_match = false
-	for step in args_split_slash.size():
-		var directories = working_directory_temp.subdirectories
-		if args_split_slash[step] != "":
-			if args_split_slash[step] == "..":
-				if working_directory_temp.parent_directory != null:
-					working_directory_temp = working_directory_temp.parent_directory
-				dir_match = true
-			elif args_split_slash[step] == ".":
-				dir_match = true
-			else:
-				for directory in directories:
-					if directory.to_string() == args_split_slash[step].to_lower():
-						working_directory_temp = directory
-						dir_match = true
-						break
-					else:
-						dir_match = false
-	if !dir_match:
+	var cd_directory = _find_folder_from_path(_args)
+	
+	if cd_directory == null:
 		_error("FOLDER_NOT_FOUND")
 		return false
 	
-	current_context.working_directory = working_directory_temp
+	current_context.working_directory = cd_directory
 	return true
 	
 func _cmd_cat(_args: String) -> bool:
 	var input_document = _args.split(" ")[0]
+	
 	if input_document.length() == 0: 
 		_error("NOT_ENOUGH_ARGS")
 		return false
-	
+		
+	var cat_file = _find_file_from_path(_args)
+	if cat_file == null:
+		_error("FILE_NOT_FOUND")
+		return false
+		
 	var input_document_ext_split = input_document.split(".")
 	if input_document_ext_split.size() == 2:
-		var input_document_ext = input_document_ext_split[1]
+		var input_document_ext = input_document.split(".")[1]
 		if not ["txt", "doc", "pdf"].has(input_document_ext.to_lower()):
 			_error("NOT_A_TEXT_FILE")
 			return false
 	
-	var documents = current_context.working_directory.child_files
-	for document in documents:
-		if document.to_string().to_lower() == input_document.to_lower():
-			_new_log(document.content)
-			return true
-	_error("FILE_NOT_FOUND")
-	return false
+	_new_log(cat_file.content)
+	return true
+	
 
 func _cmd_clear(_args: String) -> void:
 	var logs = terminal_log.get_children()
