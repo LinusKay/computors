@@ -21,6 +21,7 @@ var audio_loaded := false
 var audio_file: AudioStream = null
 var audio_file_name := ""
 
+
 # https://gist.github.com/awhiskin/b1d752e57f75319029c222bb4c14709a
 class Context:
 	var user_name := "USER"
@@ -30,6 +31,7 @@ class Context:
 	var root_directory: Folder
 	var date := "2025-07-30"
 	var password := ""
+
 
 class Folder:
 	var folder_path: String
@@ -53,6 +55,7 @@ class Folder:
 		var full_path = "/".join(path_parts) + folder_path
 		return full_path
 
+
 class Document:
 	var document_name: String
 	var parent_directory: Folder
@@ -69,7 +72,6 @@ class Document:
 	
 	func _to_string() -> String: 
 		return document_name
-	
 
 
 var commands = {
@@ -111,10 +113,11 @@ var commands = {
 			"     4 = Red           5 = Web Purple     6 = Yellow\n" + 
 			"     7 = Antique White 8 = Grey           9 = Light Blue\n" + 
 			"     A = Light Green   B = Pale Turqouise C = Light Coral\n" + 
-			"     D = Purple        E = Light Yellow   F = White"
+			"     D = Purple        E = Light Yellow   F = White\n" +
+			" Eg: colour 71"
 			,
 		"func": "_cmd_colour",
-		"args": ["<code>"],
+		"args": ["<foreground colour>[background colour]"],
 		"alias": ["color"]
 	},
 	"print": {
@@ -140,8 +143,108 @@ var commands = {
 	#}
 }
 
-#func _cmd_support(_args: String) -> void:
-	#_new_log("Your support token is: 197831")
+
+# Build out functions for use in any command where finding a file/folder is needed
+# eg: cat <file>, ls <folder>, audio load <file>, etc.
+func _find_folder_from_path(path: String) -> Folder:
+	var path_split = path.split("/")
+	var working_directory_temp = current_context.working_directory
+	if path_split.size() > 0 and path_split[0] != "":
+		var dir_match = false
+		for step in path_split.size():
+			var directories = working_directory_temp.subdirectories
+			if path_split[step] != "":
+				if path_split[step] == "..":
+					if working_directory_temp.parent_directory != null:
+						working_directory_temp = working_directory_temp.parent_directory
+					dir_match = true
+				elif path_split[step] == ".":
+					dir_match = true
+				else:
+					for directory in directories:
+						if directory.to_string() == path_split[step].to_lower():
+							working_directory_temp = directory
+							dir_match = true
+							break
+						else:
+							dir_match = false
+		if !dir_match:
+			return null
+	return working_directory_temp
+	
+	
+func _find_file_from_path(path: String) -> Document:
+	var file_directory = current_context.working_directory
+	var path_split = path.split("/")
+	var path_file = path_split[-1]
+	if path_split.size() > 1:
+		path_split.remove_at(path_split.size() - 1)
+		var path_directory = "/".join(path_split)
+		var file_folder = _find_folder_from_path(path_directory)
+		if file_folder != null: file_directory = file_folder
+	var files = file_directory.child_files
+	for file in files:
+		if file.to_string().to_lower() == path_file:
+			return file
+	return null
+
+
+func _check_file_type(file: Document, extensions: Array[String] = [], error_code: String = "GENERIC") -> bool:
+	var file_ext_split = file.to_string().split(".")
+	if file_ext_split.size() < 2:
+		_error(error_code)
+		return false
+	var file_ext = file_ext_split[1]
+	if not extensions.has(file_ext.to_lower()):
+		_error(error_code)
+		return false
+	return true
+
+
+func _cmd_help(_args: String) -> void:
+	var args_split = _args.split(" ")
+	if args_split.size() > 0 && args_split[0] != "":
+		var command = args_split[0]
+		var command_match = null
+		if commands.has(command): command_match = commands[command]
+		else:
+			for key in commands.keys():
+				if commands[key].has("alias"):
+					if commands[key]["alias"].has(command):
+						command_match = commands[key]
+						break
+		
+		if command_match == null: _error("UNRECOGNISED_OPERATION")
+		if command_match.has("description"):
+			var aliases = ""
+			var args = ""
+			if command_match.has("alias"):
+				aliases = ", ".join(command_match.alias)
+			if command_match.has("args"):
+				if command_match["args"].size() == 1:
+					args = command_match.args[0]
+					_new_log(command + " " + args + "     " + command_match.description + "\n     Alias: " + aliases)
+				else:
+					args = "\n     - " + "\n     - ".join(command_match.args)
+					_new_log(command + "     " + command_match.description + args + "\n     Alias: " + aliases)
+			else:
+				_new_log(command + "     " + command_match.description + "\n     Alias: " + aliases)
+	else:
+		for command in commands.keys():
+			if commands[command].has("description"):
+				var aliases = ""
+				var args = ""
+				if commands[command].has("alias"):
+					aliases = ", ".join(commands[command].alias)
+				if commands[command].has("args"):
+					if commands[command]["args"].size() == 1:
+						args = commands[command].args[0]
+						_new_log(command + " " + args + "     " + commands[command].description + "\n     Alias: " + aliases)
+					else:
+						args = "\n     - " + "\n     - ".join(commands[command].args)
+						_new_log(command + "     " + commands[command].description + args + "\n     Alias: " + aliases)
+				else:
+					_new_log(command + "     " + commands[command].description + "\n     Alias: " + aliases)
 
 
 func _cmd_audio(_args: String) -> bool:
@@ -153,25 +256,20 @@ func _cmd_audio(_args: String) -> bool:
 				_error("FILE_NOT_SPECIFIED")
 				return false
 			var file_name = _args_split[1]
-			var files = current_context.working_directory.child_files
-			for file in files:
-				if file.to_string().to_lower() == file_name:
-					var file_name_split = file_name.split(".")
-					if file_name_split.size() == 0:
-						_error("NOT_AN_AUDIO_FILE")
-						return false
-					var file_ext = file_name_split[1]
-					if not ["wav", "ogg", "mp3"].has(file_ext):
-						_error("NOT_AN_AUDIO_FILE")
-						return false
-					audio_file = load(file.content)
-					audio_file_name = file_name
-					speaker.load_audio(audio_file)
-					audio_loaded = true
-					_new_log("Loaded audio file " + audio_file_name + "into memory.")
-					return true
-			_error("FILE_NOT_FOUND")
-			return false	
+			var audio_load_file = _find_file_from_path(file_name)
+			if audio_load_file == null:
+				_error("FILE_NOT_FOUND")
+				return false	
+				
+			if _check_file_type(audio_load_file, ["wav", "mp3", "ogg"], "NOT_AN_AUDIO_FILE") == false:
+				return false
+				
+			audio_file = load(audio_load_file.content)
+			audio_file_name = file_name
+			speaker.load_audio(audio_file)
+			audio_loaded = true
+			_new_log("Loaded audio file " + audio_file_name + "into memory.")
+			return true
 			
 		elif operation == "play":
 			if !audio_loaded:
@@ -222,7 +320,7 @@ func _cmd_audio(_args: String) -> bool:
 			
 		elif operation == "pitch":
 			if _args_split.size() < 2:
-				_error("NOT_ENOUGH_ARGS")
+				_error("NOT_ENOUGH_ARGS", [2])
 				return false
 			var pitch_value = _args_split[1]
 			if !pitch_value.is_valid_float():
@@ -237,7 +335,7 @@ func _cmd_audio(_args: String) -> bool:
 			
 		elif operation == "volume":
 			if _args_split.size() < 2:
-				_error("NOT_ENOUGH_ARGS")
+				_error("NOT_ENOUGH_ARGS", [2])
 				return false
 			var volume_value = _args_split[1]
 			if !volume_value.is_valid_float():
@@ -281,15 +379,16 @@ func _cmd_audio(_args: String) -> bool:
 		else:
 			_error("UNRECOGNISED_OPERATION")
 			return false
-	_error("NOT_ENOUGH_ARGS")
+	_error("NOT_ENOUGH_ARGS", [">1"])
 	return false
 
 
 func _cmd_drives(_args: String) -> bool:
 	var _args_split = _args.strip_edges().to_lower().split(" ")
-	# feat. janky handling for when no args provided
+
 	if _args_split.size() > 0 and _args_split[0] != "":
 		var operation = _args_split[0]
+		
 		if operation == "connect" or operation == "+":
 			# Check if drive name given
 			if _args_split.size() > 1:
@@ -313,8 +412,9 @@ func _cmd_drives(_args: String) -> bool:
 				_error("DRIVE_NOT_FOUND")
 				return false
 			else: 
-				_error("NOT_ENOUGH_ARGS")
+				_error("NOT_ENOUGH_ARGS", [">1"])
 				return false
+				
 		elif operation == "disconnect" or operation == "-" or operation == "exit" or operation == "quit":
 			if drive_connected == false:
 				_error("DRIVE_NOT_CONNECTED")
@@ -324,13 +424,15 @@ func _cmd_drives(_args: String) -> bool:
 			current_context = context_home
 			update_visual_context()
 			return true
+			
 		elif operation == "list" or operation == "?":
 			_drives_list()
 			return true
+			
 		else:
 			_error("UNRECOGNISED_OPERATION")
 			return false
-	# If no operation given, print drives
+
 	_drives_list()
 	return true
 
@@ -345,79 +447,23 @@ func _drives_list() -> void:
 func _cmd_print(_args: String) -> bool:
 	var input_image = _args.split(" ")[0]
 	if input_image.length() == 0: 
-		_error("NOT_ENOUGH_ARGS")
+		_error("NOT_ENOUGH_ARGS", [1])
 		return false
 		
-	var input_image_ext_split = input_image.split(".")
-	if input_image_ext_split.size() < 2:
-		_error("NOT_AN_IMAGE_FILE")
+	var print_file = _find_file_from_path(_args)
+	if print_file == null:
+		_error("FILE_NOT_FOUND")
 		return false
-	var input_image_ext = input_image_ext_split[1]
-	if not ["png", "jpg", "bmp"].has(input_image_ext.to_lower()):
-		_error("NOT_AN_IMAGE_FILE")
-		return false
-		
-	var documents = current_context.working_directory.child_files
-	for document in documents:
-		if document.to_string().to_lower() == input_image.to_lower():
-			if printer.printing:
-				_error("PRINT_IN_PROGRESS")
-				return false
-			else:
-				printer.print(load(document.content))
-				return true
-	_error("FILE_NOT_FOUND")
-	return false
-
-# Build out functions for use in any command where finding a file/folder is needed
-# eg: cat <file>, ls <folder>, audio load <file>, etc.
-func _find_folder_from_path(path: String) -> Folder:
-	print("finding folder from path")
-	print(path)
-	var path_split = path.split("/")
-	var working_directory_temp = current_context.working_directory
-	if path_split.size() > 0 and path_split[0] != "":
-		var dir_match = false
-		for step in path_split.size():
-			var directories = working_directory_temp.subdirectories
-			if path_split[step] != "":
-				if path_split[step] == "..":
-					if working_directory_temp.parent_directory != null:
-						working_directory_temp = working_directory_temp.parent_directory
-					dir_match = true
-				elif path_split[step] == ".":
-					dir_match = true
-				else:
-					for directory in directories:
-						if directory.to_string() == path_split[step].to_lower():
-							working_directory_temp = directory
-							dir_match = true
-							break
-						else:
-							dir_match = false
-		if !dir_match:
-			return null
-	return working_directory_temp
 	
-func _find_file_from_path(path: String) -> Document:
-	var file_directory = current_context.working_directory
-	var path_split = path.split("/")
-	var path_file = path_split[-1]
-	if path_split.size() > 1:
-		path_split.remove_at(path_split.size() - 1)
-		var path_directory = "/".join(path_split)
-		var file_folder = _find_folder_from_path(path_directory)
-		if file_folder != null: file_directory = file_folder
-	print("path_file ", path_file)
-	print("file_directory ", file_directory)
-	var files = file_directory.child_files
-	for file in files:
-		print("file list ", file.to_string())
-		print("path_file ", path_file)
-		if file.to_string().to_lower() == path_file:
-			return file
-	return null
-
+	if _check_file_type(print_file, ["png", "jpg", "bmp"], "NOT_AN_IMAGE_FILE") == false:
+		return false
+		
+	if printer.printing:
+		_error("PRINT_IN_PROGRESS")
+		return false
+	else:
+		printer.print(load(print_file.content))
+		return true
 
 
 func _cmd_ls(_args: String) -> bool:
@@ -435,10 +481,11 @@ func _cmd_ls(_args: String) -> bool:
 		_new_log(file._to_string())
 	return true
 
+
 func _cmd_cd(_args: String) -> bool:
 	var input_folder = _args.split(" ")[0]
 	if input_folder.length() == 0: 
-		_error("NOT_ENOUGH_ARGS")
+		_error("NOT_ENOUGH_ARGS", [1])
 		return false 
 		
 	var cd_directory = _find_folder_from_path(_args)
@@ -450,11 +497,12 @@ func _cmd_cd(_args: String) -> bool:
 	current_context.working_directory = cd_directory
 	return true
 	
+	
 func _cmd_cat(_args: String) -> bool:
 	var input_document = _args.split(" ")[0]
 	
 	if input_document.length() == 0: 
-		_error("NOT_ENOUGH_ARGS")
+		_error("NOT_ENOUGH_ARGS", [1])
 		return false
 		
 	var cat_file = _find_file_from_path(_args)
@@ -462,12 +510,8 @@ func _cmd_cat(_args: String) -> bool:
 		_error("FILE_NOT_FOUND")
 		return false
 		
-	var input_document_ext_split = input_document.split(".")
-	if input_document_ext_split.size() == 2:
-		var input_document_ext = input_document.split(".")[1]
-		if not ["txt", "doc", "pdf"].has(input_document_ext.to_lower()):
-			_error("NOT_A_TEXT_FILE")
-			return false
+	if _check_file_type(cat_file, ["txt", "doc", "pdf"], "NOT_A_TEXT_FILE") == false:
+		return false
 	
 	_new_log(cat_file.content)
 	return true
@@ -478,93 +522,81 @@ func _cmd_clear(_args: String) -> void:
 	for log_entry in logs:
 		log_entry.queue_free()
 
-func _cmd_help(_args: String) -> void:
-	var args_split = _args.split(" ")
-	if args_split.size() > 0 && args_split[0] != "":
-		var command = args_split[0]
-		var command_match = null
-		if commands.has(command): command_match = commands[command]
-		else:
-			for key in commands.keys():
-				if commands[key].has("alias"):
-					if commands[key]["alias"].has(command):
-						command_match = commands[key]
-						break
-		
-		if command_match == null: _error("UNRECOGNISED_OPERATION")
-		if command_match.has("description"):
-			var aliases = ""
-			var args = ""
-			if command_match.has("alias"):
-				aliases = " (" + ", ".join(command_match.alias) + ")"
-			if command_match.has("args"):
-				if command_match["args"].size() == 1:
-					args = command_match.args[0]
-					_new_log(command + " " + args + "     " + command_match.description + aliases)
-				else:
-					args = "\n     - " + "\n     - ".join(command_match.args)
-					_new_log(command + "     " + command_match.description + args + aliases)
-			else:
-				_new_log(command + "     " + command_match.description + aliases)
-	else:
-		for command in commands.keys():
-			if commands[command].has("description"):
-				var aliases = ""
-				var args = ""
-				if commands[command].has("alias"):
-					aliases = " (" + ", ".join(commands[command].alias) + ")"
-				if commands[command].has("args"):
-					if commands[command]["args"].size() == 1:
-						args = commands[command].args[0]
-						_new_log(command + " " + args + "     " + commands[command].description + aliases)
-					else:
-						args = "\n     - " + "\n     - ".join(commands[command].args)
-						_new_log(command + "     " + commands[command].description + args + aliases)
-				else:
-					_new_log(command + "     " + commands[command].description + aliases)
 
 
 func _cmd_colour(_colour_code: String) -> bool:
-	var error: bool
-	var colour_chosen: Color
-	match _colour_code.to_lower():
-		"1": colour_chosen = Color.DARK_BLUE
-		"2": colour_chosen = Color.DARK_GREEN
-		"3": colour_chosen = Color.AQUA
-		"4": colour_chosen = Color.DARK_RED
-		"5": colour_chosen = Color.WEB_PURPLE
-		"6": colour_chosen = Color.YELLOW
-		"7": colour_chosen = Color.ANTIQUE_WHITE
-		"8": colour_chosen = Color.GRAY
-		"9": colour_chosen = Color.LIGHT_BLUE
-		"a": colour_chosen = Color.LIGHT_GREEN
-		"b": colour_chosen = Color.PALE_TURQUOISE
-		"c": colour_chosen = Color.LIGHT_CORAL
-		"d": colour_chosen = Color.PURPLE
-		"e": colour_chosen = Color.LIGHT_YELLOW
-		"f": colour_chosen = Color.WHITE
-		_:   
-			colour_chosen = Color.WHITE
-			error = true
-	if error:
+	var colour_split = _colour_code.to_lower().split("")
+	
+	if colour_split.size() > 2:
+		_error("TOO_MANY_ARGS", [2])
+		return false
+	
+	# foregroud colour
+	var input_foreground_colour = colour_split[0]
+	var chosen_foreground_colour: Color = _id_to_colour(input_foreground_colour)
+	if chosen_foreground_colour == Color(0.0, 0.0, 0.0, 1.0):
 		_error("UNRECOGNISED_OPERATION")
-		_new_log("Colour code <" + _colour_code + "> not found!")
+		_new_log("Colour code <" + input_foreground_colour + "> not found!")
+		return false
+	elif chosen_foreground_colour == %ColorRect.color:
+		_error("FOREGROUND_BACKGROUD_COLOUR_SAME")
 		return false
 	else:
-		theme.set_color("font_color", "Label", colour_chosen)
-		return true
+		theme.set_color("font_color", "Label", chosen_foreground_colour)
+		
+	# background colour
+	if colour_split.size() > 1:
+		var input_background_colour = colour_split[1]
+		var chosen_background_colour: Color = _id_to_colour(input_background_colour)
+		if chosen_background_colour == Color(0.0, 0.0, 0.0, 1.0):
+			_error("UNRECOGNISED_OPERATION")
+			_new_log("Colour code <" + input_background_colour + "> not found!")
+			return false
+		elif chosen_background_colour == chosen_foreground_colour:
+			_error("FOREGROUND_BACKGROUD_COLOUR_SAME")
+			return false
+		else:
+			%ColorRect.color = chosen_background_colour
+	return true
+
+func _id_to_colour(_colour_id: String) -> Color:
+	var colour_match: Color
+	var colours = {
+		"1": Color.DARK_BLUE,
+		"2": Color.DARK_GREEN,
+		"3": Color.AQUA,
+		"4": Color.DARK_RED,
+		"5": Color.WEB_PURPLE,
+		"6": Color.YELLOW,
+		"7": Color.ANTIQUE_WHITE,
+		"8": Color.GRAY,
+		"9": Color.LIGHT_BLUE,
+		"a": Color.LIGHT_GREEN,
+		"b": Color.PALE_TURQUOISE,
+		"c": Color.LIGHT_CORAL,
+		"d": Color.PURPLE,
+		"e": Color.LIGHT_YELLOW,
+		"f": Color.WHITE
+	}
+	if colours.keys().has(_colour_id):
+		colour_match = colours[_colour_id]
+		
+	return colour_match
+
 
 func _cmd_time(_args: String) -> void:
 	var time = Time.get_datetime_string_from_system()
 	_new_log(time)
 
-func _error(_error_type: String) -> void:
+
+func _error(_error_type: String, _args: Array = [""]) -> void:
 	var error_types = {
 		"GENERIC": "Invalid Operation: Something went wrong!",
 		"UNRECOGNISED_OPERATION": "Input not recognised as an internal or external command, operable program or file.",
 		"FOLDER_NOT_FOUND": "Cannot find the path specified.",
 		"FILE_NOT_FOUND": "Cannot find the path specified.",
-		"NOT_ENOUGH_ARGS": "Not enough arguments provided",
+		"NOT_ENOUGH_ARGS": "Not enough arguments provided. Expected " + str(_args[0]) + ".",
+		"TOO_MANY_ARGS": "Too many arguments provided. Expected " + str(_args[0]) + ".",
 		"INTERNAL_ERROR": "An internal error has occured.",
 		"NOT_AN_IMAGE_FILE": "Given file not an image (JPG, PNG, BMP).",
 		"NOT_A_TEXT_FILE": "Given file not a text file (TXT, DOC, MD, PDF).",
@@ -577,7 +609,8 @@ func _error(_error_type: String) -> void:
 		"FILE_NOT_SPECIFIED": "No file has been specified.",
 		"NO_AUDIO_LOADED": "No audio file has been loaded into memory.",
 		"VALUE_NOT_NUMERIC": "Input value is not numeric.",
-		"VALUE_OUT_OF_BOUNDS": "Input value is out of allowed bounds."
+		"VALUE_OUT_OF_BOUNDS": "Input value is out of allowed bounds.",
+		"FOREGROUND_BACKGROUND_COLOUR_SAME": "Foreground and background colours cannot be identical."
 	}
 	if error_types.has(_error_type): _new_log(error_types[_error_type])
 	else: _new_log(error_types[_error_type])
@@ -634,7 +667,7 @@ func _on_text_edit_gui_input(event: InputEvent) -> bool:
 			_error("UNRECOGNISED_OPERATION")
 			return false
 		var args_split = args.split(" ")
-		if args_split.size() > 0 and ["-h", "help"].has(args_split[0]):
+		if args_split.size() > 0 and ["-h", "help", "?", "/?"].has(args_split[0]):
 			call(commands["help"].func, command)
 		else:
 			call(command_func, args)
@@ -679,6 +712,7 @@ func _ready() -> void:
 	setup_contexts()
 	update_visual_context()
 
+
 func setup_contexts() -> void:
 	# Init context and directories
 	context_home = Context.new()
@@ -711,10 +745,14 @@ func setup_contexts() -> void:
 	]
 	# Files /desktop/folder -> Contents: Files
 	context_home.root_directory.subdirectories[0].subdirectories[0].child_files = [
-		Document.new("folderfile.txt", context_home.root_directory.subdirectories[0])
+		Document.new("folderfile.txt", context_home.root_directory.subdirectories[0]),
+		Document.new("1.png", context_home.root_directory.subdirectories[0])
 	]
 	context_home.root_directory.subdirectories[0].subdirectories[0].child_files[0].set_content(
 		"This is a test file"
+	)
+	context_home.root_directory.subdirectories[0].subdirectories[0].child_files[1].set_content(
+		"res://sprite/LEVELDATASHEETREPORT.png"
 	)
 	
 	# Files: /music/
@@ -754,6 +792,7 @@ func setup_contexts() -> void:
 		'"F10BA": "TERMINAL"'
 	)
 	drives.append(context_drive_storage)
+	
 	
 func update_visual_context() -> void:
 	var drive_name = ""
