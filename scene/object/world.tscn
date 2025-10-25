@@ -358,6 +358,7 @@ libraries = {
 }
 
 [node name="MenuStart" parent="." node_paths=PackedStringArray("audio_keyboard_sfx") instance=ExtResource("25_qrdad")]
+skip_menu = false
 audio_keyboard_sfx = NodePath("../KeyboardSFX")
 
 [connection signal="pass_command_eventcontroller" from="MonitorInput" to="EventController" method="_on_monitor_input_pass_command_eventcontroller"]

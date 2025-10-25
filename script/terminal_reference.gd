@@ -635,7 +635,9 @@ func _on_text_edit_gui_input(event: InputEvent) -> bool:
 		_new_log(terminal_pretext + " " + input_sanitised)
 		%TerminalInput/TextEdit.clear()
 		return true
-		
+	elif event.is_action_pressed("ui_focus_next"):
+		print("autocomplete")
+		return true
 	elif event.is_action_pressed("terminal_enter"):
 		var terminal_pretext = %TerminalInput/Label.text
 		var input = %TerminalInput/TextEdit.text

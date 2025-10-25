@@ -18,6 +18,7 @@ var current_focus = focus_target
 var pulled_back: bool = false
 var pullback_fov_offset: float = 20
 
+# Makes FOV and camera direction changes instant, rather than gradual
 var focus_snap: bool = false
 
 const FOV_SMOOTH_RATE: float = .3
@@ -49,15 +50,17 @@ func _set_focus_target(_focus_target: Node3D) -> void:
 		current_focus.release_focus()
 
 
-func _ready() -> void:
-	#await get_tree().process_frame
-	#_set_focus_target(focus_array[focus_index])
-	pass
-
-
 func start() -> void:
 	_set_focus_target(focus_array[focus_index])
 	started = true
+
+
+# prevent TAB breaking focus, deselecting terminal input box
+func _input(event):
+	if event is InputEventKey and event.pressed and event.keycode == KEY_TAB:
+		get_viewport().set_input_as_handled()
+		return
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	if started:
@@ -94,6 +97,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func audio_woosh() -> void:
 	$AudioWoosh.pitch_scale = randf_range(0.9, 1.1)
 	$AudioWoosh.play()
+
 
 func _physics_process(delta: float) -> void:
 	# Rotate camera to target 
