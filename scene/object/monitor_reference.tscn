@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=4 uid="uid://bl3l8std3wcxc"]
+[gd_scene load_steps=19 format=4 uid="uid://bl3l8std3wcxc"]
 
 [ext_resource type="PackedScene" uid="uid://rjnmowlocoil" path="res://model/old_computer_monitor.glb" id="1_pa6c8"]
 [ext_resource type="Texture2D" uid="uid://7pvl3emjcoau" path="res://model/computer_texture.png" id="2_gcipr"]
@@ -7,6 +7,8 @@
 [ext_resource type="Theme" uid="uid://rls2qjbal6dt" path="res://style/terminal.tres" id="5_37hri"]
 [ext_resource type="Script" uid="uid://ksmvr8anoofe" path="res://script/scroll_container.gd" id="6_0g70y"]
 [ext_resource type="AudioStream" uid="uid://c2yiu3uhlfhdv" path="res://audio/sfx/message.ogg" id="6_gnajy"]
+[ext_resource type="Script" uid="uid://b3afea2r44b00" path="res://script/interface_sound_control.gd" id="7_012jj"]
+[ext_resource type="StyleBox" uid="uid://cko51msxrxx51" path="res://style/stylebox_underline.tres" id="8_em8hs"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_d40no"]
 resource_name = "computer"
@@ -50,10 +52,28 @@ shadow_mesh = SubResource("ArrayMesh_d5qpx")
 [sub_resource type="ViewportTexture" id="ViewportTexture_xo2fp"]
 viewport_path = NodePath("Screen/SubViewportContainer/SubViewport")
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_012jj"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_em8hs"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_cgkjp"]
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_0g70y"]
+content_margin_left = 0.0
+content_margin_top = 4.0
+content_margin_right = 0.0
+content_margin_bottom = 4.0
+color = Color(1, 1, 1, 1)
+grow_begin = -2.0
+grow_end = -2.0
+vertical = true
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_012jj"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_width_bottom = 1
+
 [node name="monitor_reference" instance=ExtResource("1_pa6c8")]
 script = ExtResource("2_n1o6u")
-focus_fov = null
-origin_offset = null
 
 [node name="desk" parent="." index="0"]
 layers = 2
@@ -107,25 +127,31 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0.74509805, 1)
+color = Color(0.20392157, 0.39607844, 0.6431373, 1)
 
-[node name="ScrollContainer" type="ScrollContainer" parent="Screen/SubViewportContainer/SubViewport/Control" index="1"]
+[node name="InterfaceTerminal" type="Control" parent="Screen/SubViewportContainer/SubViewport/Control" index="1"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 450)
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceTerminal" index="0"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 440)
 layout_mode = 0
 offset_left = 5.0
 offset_top = 7.5
 offset_right = 645.0
-offset_bottom = 457.5
+offset_bottom = 447.5
 size_flags_vertical = 0
 horizontal_scroll_mode = 0
 script = ExtResource("6_0g70y")
 
-[node name="TerminalLog" type="VBoxContainer" parent="Screen/SubViewportContainer/SubViewport/Control/ScrollContainer" index="0"]
+[node name="TerminalLog" type="VBoxContainer" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceTerminal/ScrollContainer" index="0"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/ScrollContainer/TerminalLog" index="0"]
+[node name="Label" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceTerminal/ScrollContainer/TerminalLog" index="0"]
 custom_minimum_size = Vector2(640, 0)
 layout_mode = 2
 size_flags_vertical = 6
@@ -135,32 +161,294 @@ autowrap_mode = 1
 autowrap_trim_flags = 0
 justification_flags = 162
 
-[node name="TerminalInput" type="HBoxContainer" parent="Screen/SubViewportContainer/SubViewport/Control" index="2"]
+[node name="TerminalInput" type="HBoxContainer" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceTerminal" index="1"]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 5.0
 offset_top = 7.5
 offset_right = 645.0
-offset_bottom = 477.5
+offset_bottom = 465.0
 
-[node name="Label" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/TerminalInput" index="0"]
+[node name="Label" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceTerminal/TerminalInput" index="0"]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 8
 text = "C:\\Users\\local>"
 
-[node name="TextEdit" type="TextEdit" parent="Screen/SubViewportContainer/SubViewport/Control/TerminalInput" index="1"]
+[node name="TextEdit" type="LineEdit" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceTerminal/TerminalInput" index="1"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 17)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 8
 theme = ExtResource("5_37hri")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_012jj")
+theme_override_styles/read_only = SubResource("StyleBoxEmpty_em8hs")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_cgkjp")
+text = "audio load music/whwh.ogg"
+keep_editing_on_text_submit = true
 deselect_on_focus_loss_enabled = false
-tab_input_mode = false
-caret_type = 1
 caret_blink = true
-caret_draw_when_editable_disabled = true
 caret_mid_grapheme = true
+
+[node name="ColorRect2" type="ColorRect" parent="Screen/SubViewportContainer/SubViewport/Control" index="2"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -15.0
+grow_horizontal = 2
+grow_vertical = 0
+color = Color(0.023529412, 0.59607846, 0.6039216, 1)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Screen/SubViewportContainer/SubViewport/Control/ColorRect2" index="0"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 6.0
+offset_right = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LabelF1" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/ColorRect2/HBoxContainer" index="0"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.6117647, 0, 1)
+text = "F1"
+
+[node name="LabelTerminal" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/ColorRect2/HBoxContainer" index="1"]
+layout_mode = 2
+text = "Terminal"
+
+[node name="VSeparator" type="VSeparator" parent="Screen/SubViewportContainer/SubViewport/Control/ColorRect2/HBoxContainer" index="2"]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_0g70y")
+
+[node name="LabelF2" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/ColorRect2/HBoxContainer" index="3"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.6117647, 0, 1)
+text = "F2"
+
+[node name="LabelMusicPlayer" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/ColorRect2/HBoxContainer" index="4"]
+layout_mode = 2
+text = "Sound Control"
+
+[node name="VSeparator2" type="VSeparator" parent="Screen/SubViewportContainer/SubViewport/Control/ColorRect2/HBoxContainer" index="5"]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_0g70y")
+
+[node name="LabelF9" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/ColorRect2/HBoxContainer" index="6"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.6117647, 0, 1)
+text = "F9"
+
+[node name="LabelHelp" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/ColorRect2/HBoxContainer" index="7"]
+layout_mode = 2
+text = "Help"
+
+[node name="VSeparator3" type="VSeparator" parent="Screen/SubViewportContainer/SubViewport/Control/ColorRect2/HBoxContainer" index="8"]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_0g70y")
+
+[node name="LabelPGUP" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/ColorRect2/HBoxContainer" index="9"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.6117647, 0, 1)
+text = "PGUP/PGDN"
+
+[node name="LabelHelp2" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/ColorRect2/HBoxContainer" index="10"]
+layout_mode = 2
+text = "Scroll"
+
+[node name="InterfaceSoundControl" type="Control" parent="Screen/SubViewportContainer/SubViewport/Control" index="3"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("7_012jj")
+
+[node name="MarginContainer" type="MarginContainer" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl" index="0"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer" index="0"]
+layout_mode = 2
+
+[node name="HBoxContainer6" type="HBoxContainer" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer" index="0"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Label" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer/HBoxContainer6" index="0"]
+layout_mode = 2
+theme_override_styles/normal = ExtResource("8_em8hs")
+text = "["
+
+[node name="Label2" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer/HBoxContainer6" index="1"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.6117647, 0, 1)
+theme_override_styles/normal = ExtResource("8_em8hs")
+text = "P"
+
+[node name="Label3" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer/HBoxContainer6" index="2"]
+layout_mode = 2
+theme_override_styles/normal = ExtResource("8_em8hs")
+text = "] Play ["
+
+[node name="Label4" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer/HBoxContainer6" index="3"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.6117647, 0, 1)
+theme_override_styles/normal = ExtResource("8_em8hs")
+text = ";"
+
+[node name="Label5" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer/HBoxContainer6" index="4"]
+layout_mode = 2
+theme_override_styles/normal = ExtResource("8_em8hs")
+text = "] Pause ["
+
+[node name="Label7" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer/HBoxContainer6" index="5"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.6117647, 0, 1)
+theme_override_styles/normal = ExtResource("8_em8hs")
+text = "'"
+
+[node name="Label8" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer/HBoxContainer6" index="6"]
+layout_mode = 2
+theme_override_styles/normal = ExtResource("8_em8hs")
+text = "] Stop ["
+
+[node name="Label9" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer/HBoxContainer6" index="7"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.6117647, 0, 1)
+theme_override_styles/normal = ExtResource("8_em8hs")
+text = "+"
+
+[node name="Label10" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer/HBoxContainer6" index="8"]
+layout_mode = 2
+theme_override_styles/normal = ExtResource("8_em8hs")
+text = "] Vol Up ["
+
+[node name="Label11" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer/HBoxContainer6" index="9"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.6117647, 0, 1)
+theme_override_styles/normal = ExtResource("8_em8hs")
+text = "-"
+
+[node name="Label12" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer/HBoxContainer6" index="10"]
+layout_mode = 2
+theme_override_styles/normal = ExtResource("8_em8hs")
+text = "] Vol Down ["
+
+[node name="Label13" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer/HBoxContainer6" index="11"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.6117647, 0, 1)
+theme_override_styles/normal = ExtResource("8_em8hs")
+text = "/"
+
+[node name="Label14" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer/HBoxContainer6" index="12"]
+layout_mode = 2
+theme_override_styles/normal = ExtResource("8_em8hs")
+text = "] Pitch Up ["
+
+[node name="Label15" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer/HBoxContainer6" index="13"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.6117647, 0, 1)
+theme_override_styles/normal = ExtResource("8_em8hs")
+text = "\\"
+
+[node name="Label16" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer/HBoxContainer6" index="14"]
+layout_mode = 2
+theme_override_styles/normal = ExtResource("8_em8hs")
+text = "] Pitch Down ["
+
+[node name="Label17" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer/HBoxContainer6" index="15"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.6117647, 0, 1)
+theme_override_styles/normal = ExtResource("8_em8hs")
+text = "L"
+
+[node name="Label18" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer/HBoxContainer6" index="16"]
+layout_mode = 2
+theme_override_styles/normal = ExtResource("8_em8hs")
+text = "] Loop ["
+
+[node name="Label19" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer/HBoxContainer6" index="17"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.6117647, 0, 1)
+theme_override_styles/normal = ExtResource("8_em8hs")
+text = "0-9"
+
+[node name="Label20" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer/HBoxContainer6" index="18"]
+layout_mode = 2
+theme_override_styles/normal = ExtResource("8_em8hs")
+text = "] Load Recent"
+
+[node name="Label" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer" index="1"]
+visible = false
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_012jj")
+text = "[P] Play [;] Pause ['] Stop [+] Vol+ [-] Vol- [/] Pitch+ [\\] Pitch- [L] Loop"
+
+[node name="HBoxContainer5" type="HBoxContainer" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer" index="2"]
+layout_mode = 2
+
+[node name="LabelLoop" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer/HBoxContainer5" index="0"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "[ ] loop"
+
+[node name="LabelVolume" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer/HBoxContainer5" index="1"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "[ ] volume (db)"
+
+[node name="LabelPitch" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer/HBoxContainer5" index="2"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "[ ] pitch"
+
+[node name="LabelPlaybackDetails" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer" index="3"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="LabelPlayback" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer" index="4"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HSeparator" type="HSeparator" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer" index="5"]
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer" index="6"]
+layout_mode = 2
+text = "Recently Played"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer/Label2" index="0"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 18.0
+offset_bottom = 293.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LabelRecentlyPlayed" type="Label" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/MarginContainer/VBoxContainer/Label2/VBoxContainer" index="0"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="PlaybackTimer" type="Timer" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl" index="1"]
+unique_name_in_owner = true
 
 [node name="AudioMessage" type="AudioStreamPlayer3D" parent="." index="3"]
 unique_name_in_owner = true
@@ -168,4 +456,6 @@ stream = ExtResource("6_gnajy")
 volume_db = -10.0
 unit_size = 3.0
 
-[connection signal="gui_input" from="Screen/SubViewportContainer/SubViewport/Control/TerminalInput/TextEdit" to="Screen/SubViewportContainer/SubViewport/Control" method="_on_text_edit_gui_input"]
+[connection signal="focus_entered" from="Screen/SubViewportContainer/SubViewport/Control/InterfaceTerminal/TerminalInput/TextEdit" to="Screen/SubViewportContainer/SubViewport/Control" method="_on_text_edit_focus_entered"]
+[connection signal="gui_input" from="Screen/SubViewportContainer/SubViewport/Control/InterfaceTerminal/TerminalInput/TextEdit" to="Screen/SubViewportContainer/SubViewport/Control" method="_on_text_edit_gui_input"]
+[connection signal="timeout" from="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/PlaybackTimer" to="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl" method="_on_timer_timeout"]

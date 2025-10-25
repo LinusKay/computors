@@ -21,8 +21,8 @@ var pullback_fov_offset: float = 20
 # Makes FOV and camera direction changes instant, rather than gradual
 var focus_snap: bool = false
 
-const FOV_SMOOTH_RATE: float = .3
-const CAMERA_SMOOTH_RATE: float = 10
+const FOV_SMOOTH_RATE: float = .15
+const CAMERA_SMOOTH_RATE: float = 9
 
 var started := false
 
@@ -38,8 +38,8 @@ func _set_focus_target(_focus_target: Node3D) -> void:
 	focus_target_pos = focus_origin.global_transform.origin
 	focus_target_fov = _focus_target.focus_fov
 	
-	if _focus_target.has_node("Screen/SubViewportContainer/SubViewport/Control/TerminalInput/TextEdit"):
-		var terminal_input = _focus_target.get_node("Screen/SubViewportContainer/SubViewport/Control/TerminalInput/TextEdit")
+	if _focus_target.has_node("Screen/SubViewportContainer/SubViewport/Control/InterfaceTerminal/TerminalInput/TextEdit"):
+		var terminal_input = _focus_target.get_node("Screen/SubViewportContainer/SubViewport/Control/InterfaceTerminal/TerminalInput/TextEdit")
 		terminal_input.grab_focus()
 		current_focus = terminal_input
 	elif _focus_target.has_node("Screen/SubViewportContainer/SubViewport/InterfaceInputCommand/TerminalInput/TextEdit"):
@@ -55,9 +55,9 @@ func start() -> void:
 	started = true
 
 
-# prevent TAB breaking focus, deselecting terminal input box
+# prevent TAB or ESC breaking focus, deselecting terminal input box
 func _input(event):
-	if event is InputEventKey and event.pressed and event.keycode == KEY_TAB:
+	if event is InputEventKey and event.pressed and (event.keycode == KEY_TAB or event.keycode == KEY_ESCAPE):
 		get_viewport().set_input_as_handled()
 		return
 

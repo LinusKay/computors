@@ -195,7 +195,6 @@ monitor_receive = NodePath("../MonitorReceive")
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1.0000001, 0, -1, 0, -4.371139e-08, 5, 4.63398, 4)
 script = ExtResource("4_4gbmn")
 focus_array = [NodePath("../MonitorReference"), NodePath("../MonitorInput"), NodePath("../MonitorReceive"), NodePath("../Printer")]
-focus_index = 1
 
 [node name="AudioWoosh" type="AudioStreamPlayer" parent="Camera3D"]
 stream = ExtResource("3_qrdad")
@@ -358,7 +357,6 @@ libraries = {
 }
 
 [node name="MenuStart" parent="." node_paths=PackedStringArray("audio_keyboard_sfx") instance=ExtResource("25_qrdad")]
-skip_menu = false
 audio_keyboard_sfx = NodePath("../KeyboardSFX")
 
 [connection signal="pass_command_eventcontroller" from="MonitorInput" to="EventController" method="_on_monitor_input_pass_command_eventcontroller"]

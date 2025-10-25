@@ -60,8 +60,9 @@ func _on_text_edit_gui_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("pgup"):
 		$ScrollContainer.scroll_vertical -= SCROLL_DISTANCE
 	
-	if audio_keyboard_sfx != null:
-		audio_keyboard_sfx.play()
+	if not Input.is_action_pressed("pull_back"):
+		if audio_keyboard_sfx != null:
+			audio_keyboard_sfx.play()
 	
 
 func _ready() -> void:
