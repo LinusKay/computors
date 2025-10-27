@@ -185,11 +185,13 @@ theme = ExtResource("5_37hri")
 theme_override_styles/normal = SubResource("StyleBoxEmpty_012jj")
 theme_override_styles/read_only = SubResource("StyleBoxEmpty_em8hs")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_cgkjp")
-text = "audio load music/whwh.ogg"
 keep_editing_on_text_submit = true
 deselect_on_focus_loss_enabled = false
 caret_blink = true
 caret_mid_grapheme = true
+
+[node name="AutoTypeTimer" type="Timer" parent="Screen/SubViewportContainer/SubViewport/Control/InterfaceTerminal/TerminalInput" index="2"]
+unique_name_in_owner = true
 
 [node name="ColorRect2" type="ColorRect" parent="Screen/SubViewportContainer/SubViewport/Control" index="2"]
 layout_mode = 1
@@ -458,4 +460,5 @@ unit_size = 3.0
 
 [connection signal="focus_entered" from="Screen/SubViewportContainer/SubViewport/Control/InterfaceTerminal/TerminalInput/TextEdit" to="Screen/SubViewportContainer/SubViewport/Control" method="_on_text_edit_focus_entered"]
 [connection signal="gui_input" from="Screen/SubViewportContainer/SubViewport/Control/InterfaceTerminal/TerminalInput/TextEdit" to="Screen/SubViewportContainer/SubViewport/Control" method="_on_text_edit_gui_input"]
+[connection signal="timeout" from="Screen/SubViewportContainer/SubViewport/Control/InterfaceTerminal/TerminalInput/AutoTypeTimer" to="Screen/SubViewportContainer/SubViewport/Control" method="_on_auto_type_timer_timeout"]
 [connection signal="timeout" from="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl/PlaybackTimer" to="Screen/SubViewportContainer/SubViewport/Control/InterfaceSoundControl" method="_on_timer_timeout"]

@@ -1,5 +1,6 @@
 extends Control
 
+@onready var camera: Camera3D = get_node("/root/Node3D/Camera3D")
 @onready var terminal_log: VBoxContainer = %TerminalLog
 @onready var audio_keyboard_sfx: AudioStreamPlayer3D = get_node("/root/Node3D/KeyboardSFX")
 @onready var printer: CSGBox3D = get_node("/root/Node3D/Printer")
@@ -21,6 +22,56 @@ var audio_loaded := false
 var audio_file: Document = null
 var audio_file_name := ""
 
+var controllable = true
+var autotyping = false
+var autotype_string = ""
+var autotype_interval := 0.1
+var autotype_submit = true
+var autotype_next = [
+		["goodbye world", true, 0.1]
+	]
+var autotype_next_delay := 0.5
+@onready var autotype_timer = %AutoTypeTimer
+
+func _ready() -> void:
+	setup_contexts()
+	update_visual_context()
+
+func debug() -> void:
+	autotype("Lorem ipsum dolor sit amet", true, 0.01)
+	
+func autotype(string: String, submit: bool = false, speed: float = 0.1) -> void:
+	controllable = false
+	camera.set_focus_target_index(0)
+	autotype_string = string
+	autotype_interval = speed
+	autotype_timer.start(autotype_interval)
+	autotype_submit = submit
+	
+func autotype_load_next() -> void:
+	var _autotype_submit = autotype_next[0][1]
+	var _autotype_interval = autotype_next[0][2]
+	autotype(autotype_next[0][0], _autotype_submit, _autotype_interval)
+	autotype_next.pop_front()
+
+func _on_auto_type_timer_timeout() -> void:
+	if autotype_string == "":
+		autotyping = false
+		controllable = true
+		autotype_timer.stop()
+		if autotype_submit:
+			submit_input()
+		if autotype_next.size() > 0:
+			autotype_load_next()
+	else:
+		var autotype_key = autotype_string[0]
+		autotype_string = autotype_string.substr(1)
+		autotype_type(autotype_key)
+
+func autotype_type(text: String) -> void:
+	%TextEdit.text += text
+	caret_to_end()
+	
 
 # https://gist.github.com/awhiskin/b1d752e57f75319029c222bb4c14709a
 class Context:
@@ -742,96 +793,102 @@ func _new_log(log_text: String, underline: bool = false) -> void:
 	%AudioMessage.play()
 
 
+func _input(event: InputEvent) -> void:
+	if Input.is_action_just_pressed("debug"):
+		debug()
+
 func _on_text_edit_gui_input(event: InputEvent) -> bool:
 	if not Input.is_action_pressed("pull_back"):
 		audio_keyboard_sfx.play()
 	if %InterfaceTerminal.visible:
-		if Input.is_action_pressed("ctrl_left") && Input.is_key_pressed(KEY_C):
-			var terminal_pretext = %TerminalInput/Label.text
-			var input = %TerminalInput/TextEdit.text
-			var input_sanitised = input.strip_edges()
-			_new_log(terminal_pretext + " " + input_sanitised)
-			%TerminalInput/TextEdit.clear()
-			return true
-		elif event.is_action_pressed("terminal_enter"):
-			var terminal_pretext = %TerminalInput/Label.text
-			var input = %TerminalInput/TextEdit.text
-			var input_sanitised = input.strip_edges()
-			command_history.push_front(input_sanitised)
-			command_history_index = -1
-			var command = input_sanitised.split(" ")[0]
-			var first_space_index = input_sanitised.find(" ")
-			var args
-			if first_space_index == -1:
-				args = ""
-			else: args = input_sanitised.substr(first_space_index + 1)
-			_new_log(terminal_pretext + " " + input_sanitised)
-			%TerminalInput/TextEdit.clear()
-			var command_func = null
-			if commands.has(command): 
-				if commands[command].has("func"):
-					command_func = commands[command].func
-				else:
-					_error("INTERNAL_ERROR")
-					return false
-			else:
-				for key in commands.keys():
-					if commands[key].has("alias"):
-						if commands[key]["alias"].has(command):
-							command_func = commands[key].func
-							break
-			if command_func == null: 
-				_error("UNRECOGNISED_OPERATION")
-				return false
-			var args_split = args.split(" ")
-			if args_split.size() > 0 and ["-h", "help", "?", "/?"].has(args_split[0]):
-				call(commands["help"].func, command)
-			else:
-				call(command_func, args)
-			
-			# Prevent newline from being placed in input box by cancelling further handling
+		if not controllable:
 			get_viewport().set_input_as_handled()
-			update_visual_context()
-			return true
+			return false
+		else:
+			if Input.is_action_pressed("ctrl_left") && Input.is_key_pressed(KEY_C):
+				var terminal_pretext = %TerminalInput/Label.text
+				var input = %TerminalInput/TextEdit.text
+				var input_sanitised = input.strip_edges()
+				_new_log(terminal_pretext + " " + input_sanitised)
+				%TerminalInput/TextEdit.clear()
+				return true
+			elif event.is_action_pressed("terminal_enter"):
+				return submit_input()
+					
+			elif event.is_action_pressed("pgdn"):
+				%ScrollContainer.scroll_vertical += SCROLL_DISTANCE
+				return true
 				
-		elif event.is_action_pressed("pgdn"):
-			%ScrollContainer.scroll_vertical += SCROLL_DISTANCE
-			return true
+			elif event.is_action_pressed("pgup"):
+				%ScrollContainer.scroll_vertical -= SCROLL_DISTANCE
+				return true
 			
-		elif event.is_action_pressed("pgup"):
-			%ScrollContainer.scroll_vertical -= SCROLL_DISTANCE
-			return true
-		
-		elif event.is_action_pressed("ui_up"):
-			var history_size = command_history.size()
-			if history_size > 0:
-				command_history_index += 1
-				if command_history_index > history_size - 1:
-					command_history_index = history_size - 1
-				if command_history_index < 0: 
-					command_history_index = 0
-				%TerminalInput/TextEdit.text = command_history[command_history_index]
-				get_viewport().set_input_as_handled()
-				caret_to_end()
-				return true
-		elif event.is_action_pressed("ui_down"):
-			var history_size = command_history.size()
-			if history_size > 0:
-				command_history_index -= 1
-				if command_history_index < 0: 
-					command_history_index = 0
-				%TerminalInput/TextEdit.text = command_history[command_history_index]
-				get_viewport().set_input_as_handled()
-				caret_to_end()
-				return true
+			elif event.is_action_pressed("ui_up"):
+				var history_size = command_history.size()
+				if history_size > 0:
+					command_history_index += 1
+					if command_history_index > history_size - 1:
+						command_history_index = history_size - 1
+					if command_history_index < 0: 
+						command_history_index = 0
+					%TerminalInput/TextEdit.text = command_history[command_history_index]
+					get_viewport().set_input_as_handled()
+					caret_to_end()
+					return true
+			elif event.is_action_pressed("ui_down"):
+				var history_size = command_history.size()
+				if history_size > 0:
+					command_history_index -= 1
+					if command_history_index < 0: 
+						command_history_index = 0
+					%TerminalInput/TextEdit.text = command_history[command_history_index]
+					get_viewport().set_input_as_handled()
+					caret_to_end()
+					return true
 	
 	return true
 	
 
-func _ready() -> void:
-	setup_contexts()
+func submit_input() -> bool:
+	var terminal_pretext = %TerminalInput/Label.text
+	var input = %TerminalInput/TextEdit.text
+	var input_sanitised = input.strip_edges()
+	command_history.push_front(input_sanitised)
+	command_history_index = -1
+	var command = input_sanitised.split(" ")[0]
+	var first_space_index = input_sanitised.find(" ")
+	var args
+	if first_space_index == -1:
+		args = ""
+	else: args = input_sanitised.substr(first_space_index + 1)
+	_new_log(terminal_pretext + " " + input_sanitised)
+	%TerminalInput/TextEdit.clear()
+	var command_func = null
+	if commands.has(command): 
+		if commands[command].has("func"):
+			command_func = commands[command].func
+		else:
+			_error("INTERNAL_ERROR")
+			return false
+	else:
+		for key in commands.keys():
+			if commands[key].has("alias"):
+				if commands[key]["alias"].has(command):
+					command_func = commands[key].func
+					break
+	if command_func == null: 
+		_error("UNRECOGNISED_OPERATION")
+		return false
+	var args_split = args.split(" ")
+	if args_split.size() > 0 and ["-h", "help", "?", "/?"].has(args_split[0]):
+		call(commands["help"].func, command)
+	else:
+		call(command_func, args)
+	
+	# Prevent newline from being placed in input box by cancelling further handling
+	get_viewport().set_input_as_handled()
 	update_visual_context()
-
+	return true
 
 func setup_contexts() -> void:
 	# Init context and directories
@@ -944,3 +1001,4 @@ func _on_text_edit_focus_entered() -> void:
 
 func caret_to_end() -> void:
 	%TextEdit.caret_column = %TextEdit.text.length()
+pass # Replace with function body.
