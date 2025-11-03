@@ -28,7 +28,6 @@ var autotype_string = ""
 var autotype_interval := 0.1
 var autotype_submit = true
 var autotype_next = [
-		["goodbye world", true, 0.1]
 	]
 var autotype_next_delay := 0.5
 @onready var autotype_timer = %AutoTypeTimer
@@ -38,7 +37,9 @@ func _ready() -> void:
 	update_visual_context()
 
 func debug() -> void:
-	autotype("Lorem ipsum dolor sit amet", true, 0.01)
+	autotype_next.append(["audio loop", true, 0.1])
+	autotype_next.append(["audio play", true, 0.1])
+	autotype("audio load ../../../../../../music/terminal.ogg", true, 0.01)
 	
 func autotype(string: String, submit: bool = false, speed: float = 0.1) -> void:
 	controllable = false
@@ -845,7 +846,6 @@ func _on_text_edit_gui_input(event: InputEvent) -> bool:
 					get_viewport().set_input_as_handled()
 					caret_to_end()
 					return true
-	
 	return true
 	
 
@@ -853,6 +853,10 @@ func submit_input() -> bool:
 	var terminal_pretext = %TerminalInput/Label.text
 	var input = %TerminalInput/TextEdit.text
 	var input_sanitised = input.strip_edges()
+	if input_sanitised == "":
+		_new_log(terminal_pretext)
+		return true
+	
 	command_history.push_front(input_sanitised)
 	command_history_index = -1
 	var command = input_sanitised.split(" ")[0]
@@ -904,11 +908,15 @@ func setup_contexts() -> void:
 	
 	# Dir setup: / -> Files
 	context_home.root_directory.child_files = [
-		Document.new("app.exe", context_home.root_directory.subdirectories[0])
+		Document.new("app.exe", context_home.root_directory),
+		Document.new("woah.png", context_home.root_directory)
 	]
 	# Dir setup: / -> Files -> Content
 	context_home.root_directory.child_files[0].set_content(
 		"App EXE contents"
+	)
+	context_home.root_directory.child_files[1].set_content(
+		"res://sprite/yuck.png"
 	)
 
 	# Dir setup: /desktop/ -> Files
@@ -943,6 +951,7 @@ func setup_contexts() -> void:
 		Document.new("terminal.ogg", context_home.root_directory.subdirectories[2]),
 		Document.new("whwh.ogg", context_home.root_directory.subdirectories[2]),
 		Document.new("dominionofthefist.mp3", context_home.root_directory.subdirectories[2]),
+		Document.new("td3.mp3", context_home.root_directory.subdirectories[2]),
 		
 	]
 	# Files: /music/ -> Contents
@@ -958,6 +967,10 @@ func setup_contexts() -> void:
 	context_home.root_directory.subdirectories[2].child_files[2].set_metadata_key("artist", "Alfonso Surman")
 	context_home.root_directory.subdirectories[2].child_files[2].set_metadata_key("title", "Le Monde du Poing")
 	context_home.root_directory.subdirectories[2].child_files[2].set_metadata_key("year", "2006")
+	context_home.root_directory.subdirectories[2].child_files[3].set_content("res://audio/music/td3improv.mp3")
+	context_home.root_directory.subdirectories[2].child_files[3].set_metadata_key("artist", "d")
+	context_home.root_directory.subdirectories[2].child_files[3].set_metadata_key("title", "t")
+	context_home.root_directory.subdirectories[2].child_files[3].set_metadata_key("year", "2003")
 	
 	# Set active context
 	context_home.working_directory = context_home.root_directory

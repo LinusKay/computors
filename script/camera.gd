@@ -56,6 +56,7 @@ func _set_focus_target(_focus_target: Node3D) -> void:
 	
 	if _focus_target.has_node("Screen/SubViewportContainer/SubViewport/Control/InterfaceTerminal/TerminalInput/TextEdit"):
 		var terminal_input = _focus_target.get_node("Screen/SubViewportContainer/SubViewport/Control/InterfaceTerminal/TerminalInput/TextEdit")
+		await get_tree().process_frame
 		terminal_input.grab_focus()
 		current_focus = terminal_input
 	elif _focus_target.has_node("Screen/SubViewportContainer/SubViewport/InterfaceInputCommand/TerminalInput/TextEdit"):
