@@ -1,10 +1,11 @@
-[gd_scene load_steps=11 format=4 uid="uid://dmesnq886wffc"]
+[gd_scene load_steps=12 format=4 uid="uid://dmesnq886wffc"]
 
 [ext_resource type="PackedScene" uid="uid://rjnmowlocoil" path="res://model/old_computer_monitor.glb" id="1_dujnw"]
 [ext_resource type="Script" uid="uid://fcvs1kw8emjm" path="res://script/computer.gd" id="2_6m5xi"]
 [ext_resource type="Texture2D" uid="uid://7pvl3emjcoau" path="res://model/computer_texture.png" id="3_2aihn"]
 [ext_resource type="Theme" uid="uid://rls2qjbal6dt" path="res://style/terminal.tres" id="4_btwdb"]
 [ext_resource type="Script" uid="uid://bjgkbmp45uksh" path="res://script/terminal_receive.gd" id="5_dujnw"]
+[ext_resource type="FontFile" uid="uid://draneh6s0xx78" path="res://font/decterm.ttf" id="6_6m5xi"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_d40no"]
 resource_name = "computer"
@@ -49,6 +50,7 @@ shadow_mesh = SubResource("ArrayMesh_d5qpx")
 viewport_path = NodePath("Screen/SubViewportContainer/SubViewport")
 
 [sub_resource type="LabelSettings" id="LabelSettings_dujnw"]
+font = ExtResource("6_6m5xi")
 font_size = 250
 
 [node name="monitor_receive" instance=ExtResource("1_dujnw")]

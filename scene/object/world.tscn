@@ -268,6 +268,7 @@ spot_range = 14.8257
 
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0067009926, 4.97069, 4.0091734)
+visible = false
 size = Vector3(1, 10.035, 21.2443)
 material = SubResource("StandardMaterial3D_rv6fb")
 
@@ -365,6 +366,12 @@ libraries = {
 
 [node name="MenuStart" parent="." node_paths=PackedStringArray("audio_keyboard_sfx") instance=ExtResource("25_qrdad")]
 audio_keyboard_sfx = NodePath("../KeyboardSFX")
+
+[node name="Label3D" type="Label3D" parent="."]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1.2414601, 5.936058, 4.076154)
+text = "ALT 
+←→"
+font_size = 64
 
 [connection signal="pass_command_eventcontroller" from="MonitorInput" to="EventController" method="_on_monitor_input_pass_command_eventcontroller"]
 [connection signal="finished" from="Speaker/AudioStreamPlayer3D" to="Speaker" method="_on_audio_stream_player_3d_finished"]
